@@ -1,5 +1,5 @@
 # Use a Miniconda base image
-FROM continuumio/miniconda3
+FROM conda/miniconda3
 
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
@@ -9,7 +9,7 @@ ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
 WORKDIR /app
 
 # Install system dependencies, including libpoppler-dev and netcat
-RUN apt-get update && apt-get install -y libpoppler-dev netcat-openbsd
+RUN apt-get update && apt-get install -y libpoppler-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # Copy environment YAML file and create the Conda environment
 COPY ENV.yml .
