@@ -16,7 +16,7 @@ COPY ENV.yml .
 RUN conda env create -f ENV.yml
 
 # Activate the environment and set the PATH
-ENV PATH=/opt/conda/envs/awm_env/bin:$PATH
+ENV PATH=/opt/conda/envs/env/bin:$PATH
 
 # Expose the Django port
 EXPOSE 8001
@@ -26,7 +26,7 @@ COPY . .
 
 # Copy static files and run collectstatic
 COPY ./static /app/static
-RUN conda run -n awm_env python manage.py collectstatic --noinput
+RUN conda run -n env python manage.py collectstatic --noinput
 
 
 # Command to run the Django development server
