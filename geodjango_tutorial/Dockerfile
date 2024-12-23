@@ -30,4 +30,4 @@ RUN conda run -n awm_env python manage.py collectstatic --noinput
 
 
 # Command to run the Django development server
-CMD ["conda", "run", "-n", "awm_env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
+CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8001"]

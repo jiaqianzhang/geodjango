@@ -53,7 +53,7 @@ services:
     image: geodjango_tutorial
     build: .
     environment:
-      - PROJ_LIB=/opt/conda/envs/awm_env/share/proj
+      - PROJ_LIB=/opt/conda/envs/env/share/proj
     volumes:
       - .:/app
     ports:

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 # import os
 # GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/anaconda3/envs/awm_env')
+GDAL_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgdal.so"
 
 from pathlib import Path
 
