@@ -1,0 +1,82 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d  # Mount the entire conf.d directory
+      - ./nginx/certs:/etc/nginx/certs      # Mount the certs directory
+    depends_on:
+      - pgadmin4
+      - postgis
+      - awm_django_app
+    networks:
+      - geodjango_tutorial
+
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+      - "20080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: docker@example.com
+      PGADMIN_DEFAULT_PASSWORD: docker
+    volumes:
+      - my_pgadmin4_data:/var/lib/pgadmin4
+    depends_on:
+      - postgis
+    networks:
+      - geodjango_tutorial
+
+  postgis:
+    image: kartoza/postgis
+    ports:
+      - "25432:5432"
+    environment: 
+      POSTGRES_DB: postgis
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_HOST_AUTH_METHOD: md5  # Changed to md5
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "docker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    volumes:
+      - my_first_spatialdb_data:/var/lib/postgresql
+    networks:
+      - geodjango_tutorial
+
+  awm_django_app:
+    image: geodjango_tutorial
+    build: .
+    environment:
+      - PROJ_LIB=/opt/conda/envs/awm_env/share/proj
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgis
+    command: >
+      sh -c "while ! nc -z postgis 5432; do sleep 1; done; 
+      python manage.py runserver 0.0.0.0:8001"
+    networks:
+      - geodjango_tutorial
+      
+  # cannot use ssl if using localhost
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./certs:/etc/letsencrypt
+  #     - ./nginx/conf.d:/etc/nginx/conf.d
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  my_pgadmin4_data: {}
+  my_first_spatialdb_data: {}
+
+networks:
+  geodjango_tutorial:

@@ -1,0 +1,114 @@
+<!-- 
+create map template displaying map and dynamically render user locations
+same leaflet code from lab 2
+
+
+creates a web page that shows a map
+if you have locations stored (like addresses of stores or points of interest), it will display these on the map as pins
+when you click a pin it shows you the name and address of that place
+if there are no locations, it just tells you that none were found
+
+template is dynamic, meaning it can adapt to show different locations based on what data is provided to it, making it versatile for various mapping needs
+-->
+{% extends 'base.html' %}
+
+{% block title %}Location Details {% endblock %}
+{% block content %}
+    <div id="map" style="height: 500px;"></div>  <!-- Adjusted the map height for visibility -->
+    <button onclick="updateLocation()">Update Location</button>
+
+    <script>
+        var map;  // Declare the map object globally
+        var marker, circle;  // Declare marker and circle globally
+    
+        // Initialize the map function (this will be called on page load or after geolocation)
+        function initializeMap(latitude, longitude) {
+            if (map) {
+                console.log("Map already initialized.");
+                return;  // Map is already initialized, no need to re-initialize
+            }
+    
+            // Initialize the map with given latitude and longitude
+            map = L.map('map').setView([latitude, longitude], 13);  // Use the coordinates to center the map
+    
+            // Add a tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            // Add the initial marker and circle
+            marker = L.marker([latitude, longitude]).addTo(map);
+            circle = L.circle([latitude, longitude], {radius: 100}).addTo(map);  // Circle with radius
+        }
+    
+        // Function to update the map with new location data (removes previous markers)
+        function updateMap(latitude, longitude, accuracy) {
+            if (!map) {
+                console.error("Map is not initialized.");
+                return;  // Exit if map is not initialized
+            }
+    
+            // Remove previous marker and circle if they exist
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            if (circle) {
+                map.removeLayer(circle);
+            }
+    
+            // Add new marker and circle with updated accuracy
+            marker = L.marker([latitude, longitude]).addTo(map);
+            circle = L.circle([latitude, longitude], accuracy).addTo(map);
+        }
+    
+        // Function to update the user's location using geolocation
+        function updateLocation() {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    console.log("Location found: ", position.coords.latitude, position.coords.longitude);
+                    // Update the map with new location data
+                    updateMap(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                },
+                function(error) {
+                    console.error('Error getting location:', error);
+                    alert('Error getting location: ' + error.message);
+    
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("User denied the request for Geolocation. Please enable location access in your browser settings.");
+                            console.error("User denied the request for Geolocation.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Location information is unavailable. This might happen if your device doesn't have a GPS or you're using a desktop without location services.");
+                            console.error("Location information is unavailable.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("The request to get user location timed out. Please try again.");
+                            console.error("The request to get user location timed out.");
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            alert("An unknown error occurred. Please try again later.");
+                            console.error("An unknown error occurred.");
+                            break;
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,  // 10 seconds timeout
+                    maximumAge: 0
+                }
+            );
+        }
+    
+        // Initialize map with saved location if available (from Django template)
+        {% if location %}
+            console.log('Location:', {{ location.y }}, {{ location.x }});
+            initializeMap({{ location.y }}, {{ location.x }});  // Initialize map with saved location
+        {% else %}
+            console.log('No location data available');
+            // Default map location if no location is available
+            initializeMap(51.5074, -0.1278);  // Default to London coordinates
+        {% endif %}
+    </script>    
+
+{% endblock %}

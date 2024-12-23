@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>WebMap PWA</title>
+    
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- Add icons for iOS -->
+    <link rel="apple-touch-icon" href="{% static 'images/icons/icon-192x192.png' %}">
+    
+    <style>
+        /* Styles for the loading indicator */
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* Styles for install and update prompts */
+        #installPrompt, #updatePrompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #007bff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+        }
+
+        #installPrompt button, #updatePrompt button {
+            background: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div id="loading">
+        Loading...
+    </div>
+
+    <!-- Install Prompt -->
+    <div id="installPrompt">
+        <button id="installButton">Install WebMap App</button>
+    </div>
+
+    <!-- Update Prompt -->
+    <div id="updatePrompt">
+        <button onclick="window.location.reload()">Update Available - Click to Reload</button>
+    </div>
+
+    <h1>WebMap PWA</h1>
+    <p>Your PWA content goes here</p>
+    
+    <!-- Add some content to verify caching -->
+    <div id="status">
+        <p>Connection Status: <span id="connection-status">Online</span></p>
+    </div>
+
+    <script>
+        // Loading indicator functions
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Install prompt handling
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').style.display = 'block';
+        });
+
+        document.getElementById('installButton').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to install prompt: ${outcome}`);
+                deferredPrompt = null;
+                document.getElementById('installPrompt').style.display = 'none';
+            }
+        });
+
+        // Service Worker registration and update handling
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    showLoading(); // Show loading indicator
+                    console.log('Attempting to register service worker...');
+                    const registration = await navigator.serviceWorker.register(
+                        "{% static 'service-worker.js' %}",
+                        { scope: '/static/' }  // Changed scope to match static directory
+                    );
+                    console.log('Service worker registered:', registration);
+                    
+                    // Listen for controlling service worker changes
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        console.log('Service Worker controller changed');
+                        document.getElementById('updatePrompt').style.display = 'block';
+                    });
+                    
+                    // Check if service worker is controlling the page
+                    if (navigator.serviceWorker.controller) {
+                        console.log('Page is controlled by service worker');
+                    }
+                    
+                } catch (error) {
+                    console.error('Service worker registration failed:', error);
+                } finally {
+                    hideLoading(); // Hide loading indicator
+                }
+            });
+        }
+
+
+        // Update the connection status monitoring section in your pwa.html
+    function updateOnlineStatus() {
+        const status = document.getElementById('connection-status');
+        const isOnline = navigator.onLine;
+        
+        status.textContent = isOnline ? 'Online' : 'Offline';
+        status.style.color = isOnline ? 'green' : 'red';
+
+        // Notify service worker about status change
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            const messageChannel = new MessageChannel();
+            navigator.serviceWorker.controller.postMessage('CHECK_ONLINE_STATUS', [messageChannel.port2]);
+            
+            messageChannel.port1.onmessage = event => {
+                const isWorkerOnline = event.data.online;
+                status.textContent = isWorkerOnline ? 'Online' : 'Offline';
+                status.style.color = isWorkerOnline ? 'green' : 'red';
+            };
+        }
+    }
+
+    // Add event listeners for online/offline events
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus(); // Initial check
+
+    // Add periodic status check
+    setInterval(updateOnlineStatus, 1000); // Check every second
+
+    </script>
+</body>
+</html>

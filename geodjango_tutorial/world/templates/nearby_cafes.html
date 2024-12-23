@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nearby Cafes</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([51.5074, -0.1276], 13); // Default to London
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        function fetchCafes(lat, lon) {
+            fetch(`/cafes/nearby/?lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.cafes.forEach(cafe => {
+                        L.marker([cafe.latitude, cafe.longitude]).addTo(map)
+                            .bindPopup(`<b>${cafe.name}</b><br>${cafe.address}`)
+                            .openPopup();
+                    });
+                });
+        }
+
+        // Use geolocation to get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const { latitude, longitude } = position.coords;
+                map.setView([latitude, longitude], 13);
+                fetchCafes(latitude, longitude);
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    </script>
+</body>
+</html>

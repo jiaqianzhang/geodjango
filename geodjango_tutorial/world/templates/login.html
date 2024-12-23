@@ -1,0 +1,23 @@
+<!-- 
+creates a login page with a centered form
+uses a pre-defined structure (the base template) and fills in the specific parts for a login page
+form is set up to securely send user login information to the server when submitted
+layout is responsive, meaning it will look good on both desktop and mobile devices
+-->
+
+{% extends 'base.html' %}<!-- template inheritance, override specific blocks -->
+
+{% block title %}Login - My Website{% endblock %} <!-- sets the title of the page to login- my website appear on browser tab-->
+
+{% block content %} <!-- section define the main content of the page which will be inserted into the corresponding block in the base template-->
+<div class="row justify-content-center"> <!-- centers the content horizontally -->
+    <div class="col-md-6"> <!-- makes the form take up half the width on medium sized screens and larger -->
+        <h2 class="text-center">Login</h2>
+        <form method="POST" action="{% url 'login' %}"> <!-- form that submit data using the POST method, to the url mapped to the login view-->
+            {% csrf_token %} <!-- adds a cross site request forgery token to the form for security -->
+            {{ form.as_p }} <!-- renders the form field, a django form object passed from the view and as_p wraps each field in a p tag-->
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
