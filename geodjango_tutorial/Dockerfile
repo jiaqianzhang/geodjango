@@ -1,6 +1,5 @@
 # Use the existing Conda Miniconda3 image
-FROM conda/miniconda3:latest
-
+FROM conda/miniconda3:23.3.1-0
 
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
@@ -16,12 +15,14 @@ RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
 # Install system dependencies, allowing unauthenticated packages
 RUN apt-get install -y --allow-unauthenticated libpoppler-dev netcat-openbsd
 
+# Install Mamba (faster alternative to Conda)
+RUN conda install mamba -c conda-forge --quiet
 
 # Copy environment YAML file
 COPY ENV.yml .
 
-# Step 1: Create the Conda environment from the ENV.yml file
-RUN conda env create -f ENV.yml --quiet
+# Step 1: Create the Conda environment from the ENV.yml file using Mamba
+RUN mamba env create -f ENV.yml --quiet
 
 # Activate the environment and set the PATH
 ENV PATH="/opt/conda/envs/env/bin:$PATH"
@@ -37,3 +38,4 @@ RUN conda run -n env python manage.py collectstatic --noinput
 
 # Command to run the Django development server
 CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
+
