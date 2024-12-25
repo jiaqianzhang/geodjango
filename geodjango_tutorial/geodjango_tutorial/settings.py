@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-m+zooajhj*smjym)sw21(+!758@i67fna!d)4cu@!#7gv08rj3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.206.144.181', 'localhost', 'jiaqianzhang.site']
+ALLOWED_HOSTS = ['18.206.144.181', 'jiaqianzhang.site', 'www.jiaqianzhang.site']
 
 # FOURSQUARE_API_KEY ="fsq3Oz3zEGlf7x3LtPkVzYWV6YqQRMBU9Cq4jHMua6+lCGc="
 

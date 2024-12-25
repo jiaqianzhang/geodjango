@@ -16,9 +16,14 @@ RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /
     apt-get install -y --no-install-recommends libpoppler-dev netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy environment YAML file and create the Conda environment
+# Step 1: Install base dependencies like python, gdal, pyproj, psycopg2, uwsgi
+RUN conda install -c conda-forge python=3.12 gdal pyproj psycopg2 uwsgi
+
+# Copy environment YAML file
 COPY ENV.yml .
-RUN conda env create -f ENV.yml
+
+# Step 2: Install remaining dependencies from ENV.yml
+RUN conda env update -f ENV.yml
 
 # Activate the environment and set the PATH
 ENV PATH="/opt/conda/envs/env/bin:$PATH"
