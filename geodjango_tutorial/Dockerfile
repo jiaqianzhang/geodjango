@@ -1,5 +1,6 @@
 # Use the existing Conda Miniconda3 image
-FROM conda/miniconda3:23.3.1-0
+FROM conda/miniconda3:latest
+
 
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
