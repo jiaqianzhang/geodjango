@@ -14,7 +14,6 @@ services:
     networks:
       - geodjango_tutorial
 
-
   pgadmin4:
     image: dpage/pgadmin4
     ports:
