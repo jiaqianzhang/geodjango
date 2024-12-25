@@ -1,5 +1,5 @@
-# Use a Miniconda base image
-FROM conda/miniconda3
+# Use Miniconda base image with Debian Buster
+FROM conda/miniconda3:latest-buster
 
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
@@ -8,13 +8,13 @@ ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
 # Set the working directory
 WORKDIR /app
 
-# Update apt sources and install system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y libpoppler-dev netcat-openbsd
 
 # Copy environment YAML file
 COPY ENV.yml .
 
-# Step 2: Install remaining dependencies from ENV.yml
+# Step 1: Create the Conda environment from the ENV.yml file
 RUN conda env update -f ENV.yml
 
 # Activate the environment and set the PATH
@@ -23,11 +23,10 @@ ENV PATH="/opt/conda/envs/env/bin:$PATH"
 # Expose the Django port
 EXPOSE 8001
 
-# Copy the Django project files into the container
+# Copy the Django project files into the container (after dependencies)
 COPY . .
 
-# Copy static files and run collectstatic
-COPY ./static /app/static
+# Collect static files and run collectstatic
 RUN conda run -n env python manage.py collectstatic --noinput
 
 # Command to run the Django development server
