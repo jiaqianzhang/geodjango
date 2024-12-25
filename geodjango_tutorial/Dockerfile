@@ -13,8 +13,9 @@ WORKDIR /app
 RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
     apt-get update
 
-# Install system dependencies
-RUN apt-get install -y libpoppler-dev netcat-openbsd
+# Install system dependencies, allowing unauthenticated packages
+RUN apt-get install -y --allow-unauthenticated libpoppler-dev netcat-openbsd
+
 
 # Copy environment YAML file
 COPY ENV.yml .
