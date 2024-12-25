@@ -1,5 +1,5 @@
-# Use Miniconda base image with Debian Buster
-FROM conda/miniconda3:latest-buster
+# Use a Miniconda base image
+FROM conda/miniconda3
 
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
@@ -8,8 +8,11 @@ ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y libpoppler-dev netcat-openbsd
+# Update apt sources and install system dependencies
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
+    sed -i '/stretch-updates/d' /etc/apt/sources.list && \
+    sed -i '/security.debian.org/d' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y libpoppler-dev netcat-openbsd
 
 # Copy environment YAML file
 COPY ENV.yml .
