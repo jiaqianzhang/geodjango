@@ -9,15 +9,15 @@ ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
 WORKDIR /app
 
 # Update apt-get and install dependencies one by one for easier debugging
-RUN apt-get update && \
-    apt-get install -y \
-    libgdal-dev \
-    gdal-bin \
-    libpq-dev \
-    python3-dev \
-    build-essential \
-    libproj-dev && \
+RUN apt-get update -y && \
+    apt-get install -y libgdal-dev && \
+    apt-get install -y gdal-bin && \
+    apt-get install -y libpq-dev && \
+    apt-get install -y python3-dev && \
+    apt-get install -y build-essential && \
+    apt-get install -y libproj-dev && \
     apt-get clean
+
 
 # Install Python dependencies using pip
 COPY requirements.txt .
