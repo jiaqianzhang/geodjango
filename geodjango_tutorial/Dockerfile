@@ -8,10 +8,9 @@ ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
 # Set the working directory
 WORKDIR /app
 
-# Update the apt sources to a more recent Debian version
-RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --allow-unauthenticated \
+# Update apt-get and install dependencies one by one for easier debugging
+RUN apt-get update && \
+    apt-get install -y \
     libgdal-dev \
     gdal-bin \
     libpq-dev \
