@@ -19,8 +19,8 @@ RUN apt-get install -y --allow-unauthenticated \
     libpq-dev \
     python3-dev \
     build-essential \
-    libproj-dev \        # Install the required PROJ library
-    proj-bin             # Install PROJ binaries (needed for pyproj)
+    libproj-dev && \  # Install the required PROJ library
+    apt-get clean
 
 # Install Python dependencies using pip
 COPY requirements.txt .
