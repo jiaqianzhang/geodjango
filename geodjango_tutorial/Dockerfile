@@ -11,15 +11,21 @@ WORKDIR /app
 # Update package lists and install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        gnupg2 \
+        software-properties-common \
+        wget \
+        curl \
+        ca-certificates && \
+    # Add UbuntuGIS repository for updated GDAL
+    wget -qO - https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add - && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
         libgdal-dev \
         gdal-bin \
         libpq-dev \
         python3-dev \
         build-essential \
-        libproj-dev \
-        wget \
-        curl \
-        software-properties-common && \
+        libproj-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
