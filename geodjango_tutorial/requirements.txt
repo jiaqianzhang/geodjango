@@ -1,0 +1,15 @@
+django
+psycopg2
+requests
+djangorestframework
+geopy
+django-pwa
+gunicorn
+uwsgi
+django-leaflet
+django-crispy-forms
+pyproj
+gdal
+django-cors-headers
+django-filter
+djangorestframework-gis

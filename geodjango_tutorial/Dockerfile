@@ -1,7 +1,6 @@
 # Use the existing Conda Miniconda3 image
 FROM conda/miniconda3:latest
 
-
 # Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
@@ -14,19 +13,14 @@ RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
     apt-get update
 
 # Install system dependencies, allowing unauthenticated packages
-RUN apt-get install -y --allow-unauthenticated libpoppler-dev netcat-openbsd
+RUN apt-get install -y --allow-unauthenticated \
+    libpoppler-dev \
+    libgdal-dev \
+    netcat-openbsd
 
-# Install Mamba (faster alternative to Conda)
-RUN conda install mamba -c conda-forge --quiet
-
-# Copy environment YAML file
-COPY ENV.yml .
-
-# Step 1: Create the Conda environment from the ENV.yml file using Mamba
-RUN mamba env create -f ENV.yml --quiet
-
-# Activate the environment and set the PATH
-ENV PATH="/opt/conda/envs/env/bin:$PATH"
+# Install Python dependencies using pip
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the Django port
 EXPOSE 8001
@@ -34,9 +28,8 @@ EXPOSE 8001
 # Copy the Django project files into the container
 COPY . .
 
-# Collect static files and run collectstatic
-RUN conda run -n env python manage.py collectstatic --noinput
+# Collect static files
+RUN python manage.py collectstatic --noinput
 
 # Command to run the Django development server
-CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
-
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
