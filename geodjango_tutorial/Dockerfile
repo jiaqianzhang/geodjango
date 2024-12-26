@@ -12,13 +12,15 @@ WORKDIR /app
 RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
     apt-get update
 
-# Install system dependencies, allowing unauthenticated packages
+# Install system dependencies, including GDAL, PostgreSQL development libraries, and PROJ
 RUN apt-get install -y --allow-unauthenticated \
     libgdal-dev \
     gdal-bin \
     libpq-dev \
     python3-dev \
-    build-essential
+    build-essential \
+    libproj-dev \        # Install the required PROJ library
+    proj-bin             # Install PROJ binaries (needed for pyproj)
 
 # Install Python dependencies using pip
 COPY requirements.txt .
