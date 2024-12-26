@@ -10,16 +10,14 @@ WORKDIR /app
 
 # Update the apt sources to a more recent Debian version
 RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
-    apt-get update
-
-# Install system dependencies, including GDAL, PostgreSQL development libraries, and PROJ
-RUN apt-get install -y --allow-unauthenticated \
+    apt-get update && \
+    apt-get install -y --allow-unauthenticated \
     libgdal-dev \
     gdal-bin \
     libpq-dev \
     python3-dev \
     build-essential \
-    libproj-dev && \  # Install the required PROJ library
+    libproj-dev && \
     apt-get clean
 
 # Install Python dependencies using pip
