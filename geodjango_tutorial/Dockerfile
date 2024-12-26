@@ -57,9 +57,8 @@ WORKDIR /app
 # Install system dependencies, including libpoppler-dev and netcat
 RUN apt-get update && apt-get install -y libpoppler-dev netcat-openbsd
 
-# Copy environment YAML file and create the Conda environment
-COPY ENV.yml .
-RUN conda env create -f ENV.yml
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Activate the environment and set the PATH
 ENV PATH=/opt/conda/envs/env/bin:$PATH
