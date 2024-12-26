@@ -14,9 +14,11 @@ RUN sed -i 's/stretch/buster/g' /etc/apt/sources.list && \
 
 # Install system dependencies, allowing unauthenticated packages
 RUN apt-get install -y --allow-unauthenticated \
-    libpoppler-dev \
     libgdal-dev \
-    netcat-openbsd
+    gdal-bin \
+    libpq-dev \
+    python3-dev \
+    build-essential
 
 # Install Python dependencies using pip
 COPY requirements.txt .
