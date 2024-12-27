@@ -217,7 +217,7 @@ DATABASES = {
         'NAME': 'postgis',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': '0.0.0.0',  # This should match the service name in docker-compose
+        'HOST': 'localhost',  # This should match the service name in docker-compose
         'PORT': '5432',
     }
 }
