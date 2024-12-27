@@ -1,37 +1,37 @@
-# Use a Conda-based image if you need Conda
-FROM continuumio/miniconda3:latest
+# # Use a Conda-based image if you need Conda
+# FROM continuumio/miniconda3:latest
 
-# Set environment variables
-ENV PYTHONUNBUFFERED 1
+# # Set environment variables
+# ENV PYTHONUNBUFFERED 1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    && add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
-    && apt-get update && apt-get install -y \
-    libgdal-dev gdal-bin \
-    && gdal-config --version  # Confirm GDAL version
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y \
+#     software-properties-common \
+#     && add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
+#     && apt-get update && apt-get install -y \
+#     libgdal-dev gdal-bin \
+#     && gdal-config --version  # Confirm GDAL version
 
-# Create a Conda environment and activate it
-RUN conda create -n env python=3.12 -y && conda clean -a
-SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
+# # Create a Conda environment and activate it
+# RUN conda create -n env python=3.12 -y && conda clean -a
+# SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
-# Install Python dependencies
-COPY requirements.txt /app/
-WORKDIR /app
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# # Install Python dependencies
+# COPY requirements.txt /app/
+# WORKDIR /app
+# RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Expose the Django port
-EXPOSE 8001
+# # Expose the Django port
+# EXPOSE 8001
 
-# Copy the Django project files into the container
-COPY . .
+# # Copy the Django project files into the container
+# COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# # Collect static files
+# RUN python manage.py collectstatic --noinput
 
-# Command to run the Django development server
-CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
+# # Command to run the Django development server
+# CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
 
 # Use a Miniconda base image
 # FROM continuumio/miniconda3
@@ -95,3 +95,34 @@ CMD ["conda", "run", "-n", "env", "python", "manage.py", "runserver", "0.0.0.0:8
 # # Command to run the Django development server
 # CMD ["conda", "run", "-n", "awm_env", "python", "manage.py", "runserver", "0.0.0.0:8001"]
 
+FROM continuumio/miniconda3
+
+LABEL maintainer="Bujar Raufi"
+
+# I use the geodjango_tutorial as my project name adjust to your project name
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
+
+RUN mkdir -p /app
+WORKDIR /app
+
+# Create the environment:
+COPY ENV.yml .
+RUN conda env create -f ENV.yml
+
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
+
+# Copy everything in your Django project to the image.
+COPY . /app
+ENV PYTHONPATH="/app"
+
+# The code to run when container is started:
+COPY manage.py .
+ENTRYPOINT ["conda", "run", "-n", "env"]
+
+# Exposing the port that the container will operate feel free to change is port is taken
+EXPOSE 8001
+
+# Start the server when the container starts
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
