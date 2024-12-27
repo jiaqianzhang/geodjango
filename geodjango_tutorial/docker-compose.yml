@@ -42,7 +42,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
     volumes:
       - my_first_spatialdb_data:/var/lib/postgresql
     networks:
