@@ -9,7 +9,8 @@ uwsgi
 django-leaflet
 django-crispy-forms
 pyproj
-gdal==3.10.0
+gdal==3.9.3
+
 django-cors-headers
 django-filter
 djangorestframework-gis
