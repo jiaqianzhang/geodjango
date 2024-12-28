@@ -41,6 +41,11 @@ services:
     volumes:
       - ./postgres-config/postgresql.conf:/etc/postgresql/postgresql.conf
     command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - geodjango_tutorial
 
