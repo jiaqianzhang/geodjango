@@ -33,12 +33,14 @@ services:
     ports:
       - "25432:5432"
     environment: 
-      POSTGRES_DB: postgis
-      POSTGRES_USER: docker
-      POSTGRES_PASSWORD: docker
-      POSTGRES_HOST_AUTH_METHOD: md5
+      - POSTGRES_DB=postgis
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - ALLOW_IP_RANGE=0.0.0.0/0
     volumes:
-      - my_first_spatialdb_data:/var/lib/postgresql
+      - ./postgres-config/postgresql.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
     networks:
       - geodjango_tutorial
 
@@ -47,6 +49,12 @@ services:
     build: .
     environment:
       - PROJ_LIB=/opt/conda/envs/env/share/proj
+      - DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=postgis
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_HOST=postgis
     volumes:
       - .:/app
     ports:
@@ -54,8 +62,16 @@ services:
     depends_on:
       - postgis
     command: >
-      sh -c "while ! nc -z postgis 5432; do sleep 1; done; 
-      python manage.py runserver 0.0.0.0:8001"
+      sh -c "
+        echo 'Waiting for PostgreSQL...' &&
+        while ! nc -z postgis 5432; do
+          sleep 1
+          echo 'Still waiting for PostgreSQL...'
+        done &&
+        echo 'PostgreSQL is up!' &&
+        conda run -n env python manage.py migrate &&
+        conda run -n env python manage.py runserver 0.0.0.0:8001
+      "
     networks:
       - geodjango_tutorial
 

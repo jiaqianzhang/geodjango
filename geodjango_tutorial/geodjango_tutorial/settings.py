@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 # import os
 # GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/anaconda3/envs/awm_env')
+# GDAL Settings
 GDAL_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgdal.so"
+GEOS_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgeos_c.so"
+
 
 from pathlib import Path
 
@@ -62,13 +65,28 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # Other middleware...
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",  # This should be as high as possible
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8001",  # Replace with the appropriate origin for your frontend
+    "http://localhost:8001",
+    "http://18.206.144.181",
+    "http://jiaqianzhang.site",
+    "http://www.jiaqianzhang.site",
+    "https://jiaqianzhang.site",
+    "https://www.jiaqianzhang.site",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 # Configure PWA settings
 PWA_APP_NAME = 'WebMap'
@@ -178,15 +196,6 @@ LEAFLET_CONFIG = {
     'OPACITY': 0.5,
     }
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
 
 ROOT_URLCONF = "geodjango_tutorial.urls"
 
@@ -242,6 +251,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+}
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],  # Add your template directory
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -264,17 +299,20 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# SECURE_SSL_REDIRECT = True  # Redirect all HTTP to HTTPS
-SECURE_HSTS_SECONDS = 3600  # Enable HTTP Strict Transport Security
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Include subdomains in HSTS
-SECURE_HSTS_PRELOAD = True  # Preload HSTS in browser
-
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-
-SECURE_SSL_REDIRECT = False  # Only enable this in production
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
-
-
+# Security Settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False  # Set to True in production
+CSRF_COOKIE_SECURE = False  # Set to True in production
+SESSION_COOKIE_SECURE = False  # Set to True in production
+
+# For development only
+DEBUG = True
+
+# Static files configuration
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
