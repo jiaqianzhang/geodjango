@@ -16,13 +16,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt:ro    # This is the correct path
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+    user: root  # Temporarily add this to debug permissions
     depends_on:
       - awm_django_app
-    networks:
-      - geodjango_tutorial
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -82,8 +81,6 @@ services:
       - ./certbot/conf:/etc/letsencrypt
     depends_on:
       - nginx
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
 volumes:
   my_pgadmin4_data: {}
   my_first_spatialdb_data: {}
