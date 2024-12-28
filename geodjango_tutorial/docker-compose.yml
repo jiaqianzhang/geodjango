@@ -75,12 +75,12 @@ services:
     networks:
       - geodjango_tutorial
 
-  certbot:
+    certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/www:/var/www/certbot:rw
       - ./certbot/conf:/etc/letsencrypt:rw
-    command: certonly --webroot --webroot-path=/var/www/certbot --email your-email@domain.com --agree-tos --no-eff-email -d jiaqianzhang.site
+    command: renew --noninteractive --webroot --webroot-path=/var/www/certbot
     depends_on:
       - nginx
     networks:
