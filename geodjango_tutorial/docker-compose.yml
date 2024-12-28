@@ -18,7 +18,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt:ro    # Changed from /etc/nginx/certs
+      - ./certbot/conf:/etc/letsencrypt:ro    # This is the correct path
     depends_on:
       - awm_django_app
     networks:
