@@ -223,14 +223,15 @@ WSGI_APPLICATION = "geodjango_tutorial.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 # settings.py
 # Database Configuration
+# settings.py
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('POSTGRES_DB', 'postgis'),
-        'USER': os.getenv('POSTGRES_USER', 'docker'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'docker'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'NAME': 'postgis',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': '172.18.0.2',  # Use the actual IP address we saw in the error
+        'PORT': '5432',
     }
 }
 
