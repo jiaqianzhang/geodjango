@@ -44,7 +44,7 @@ services:
     networks:
       - geodjango_tutorial
 
-    awm_django_app:
+  awm_django_app:
     image: geodjango_tutorial
     build: .
     environment:
