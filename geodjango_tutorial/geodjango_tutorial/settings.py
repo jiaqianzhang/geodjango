@@ -220,16 +220,18 @@ WSGI_APPLICATION = "geodjango_tutorial.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# settings.py
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'postgis',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': 'postgis',  # This should match the service name in docker-compose
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # Use environment variable or default to localhost
         'PORT': '5432',
     }
 }
+
 
 
 

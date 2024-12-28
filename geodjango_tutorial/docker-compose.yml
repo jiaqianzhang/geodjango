@@ -44,7 +44,7 @@ services:
     networks:
       - geodjango_tutorial
 
-  awm_django_app:
+    awm_django_app:
     image: geodjango_tutorial
     build: .
     environment:
@@ -54,7 +54,7 @@ services:
       - POSTGRES_DB=postgis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST=postgis
+      - POSTGRES_HOST=postgis  # This will override the localhost default
     volumes:
       - .:/app
     ports:
