@@ -67,12 +67,14 @@ services:
   #     - ./certbot/conf:/etc/letsencrypt
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   certbot:
-      image: certbot/certbot
-      volumes:
-        - ./certbot/www:/var/www/certbot
-        - ./certbot/conf:/etc/letsencrypt
-      depends_on:
-        - nginx
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - nginx
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 volumes:
   my_pgadmin4_data: {}
   my_first_spatialdb_data: {}
