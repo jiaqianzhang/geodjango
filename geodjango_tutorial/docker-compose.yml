@@ -1,3 +1,14 @@
+
+    # volumes:
+    #   - ./nginx/conf.d:/etc/nginx/conf.d
+    #   - ./certbot/www:/var/www/certbot
+    #   - ./certbot/conf:/etc/nginx/certs     # Mount the certs directory
+    # depends_on:
+    #   - pgadmin4
+    #   - postgis
+    #   - awm_django_app
+    # networks:
+    #   - geodjango_tutorial
 services:
   nginx:
     image: nginx:latest
@@ -7,10 +18,8 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/nginx/certs     # Mount the certs directory
+      - ./certbot/conf:/etc/letsencrypt:ro    # Changed from /etc/nginx/certs
     depends_on:
-      - pgadmin4
-      - postgis
       - awm_django_app
     networks:
       - geodjango_tutorial
