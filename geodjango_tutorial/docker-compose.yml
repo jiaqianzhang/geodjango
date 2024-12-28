@@ -39,15 +39,16 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=md5
       - ALLOW_IP_RANGE=0.0.0.0/0
     volumes:
-      - ./postgres-config/postgresql.conf:/etc/postgresql/postgresql.conf
-    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-config/pg_hba.conf:/etc/postgresql/17/main/pg_hba.conf
     networks:
       - geodjango_tutorial
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   awm_django_app:
     image: geodjango_tutorial
@@ -93,6 +94,7 @@ services:
 volumes:
   my_pgadmin4_data: {}
   my_first_spatialdb_data: {}
+  postgres_data: {}
 
 networks:
   geodjango_tutorial:
