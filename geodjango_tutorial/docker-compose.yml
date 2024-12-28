@@ -31,18 +31,18 @@ services:
   postgis:
     image: kartoza/postgis
     ports:
-      - "25432:5432"
+      - "5432:5432"
     environment: 
       - POSTGRES_DB=postgis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST_AUTH_METHOD=md5
-      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - ALLOW_IP_RANGE=0.0.0.0/0  # Added for kartoza/postgis
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgres-config/pg_hba.conf:/etc/postgresql/17/main/pg_hba.conf
+      - my_first_spatialdb_data:/var/lib/postgresql/data
     networks:
       - geodjango_tutorial
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
       interval: 10s
@@ -60,21 +60,16 @@ services:
       - POSTGRES_DB=postgis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST=postgis  # This will override the localhost default
+      - POSTGRES_HOST=postgis
     volumes:
       - .:/app
     ports:
       - "8001:8001"
     depends_on:
-      - postgis
+      postgis:
+        condition: service_healthy  # Using healthcheck for better dependency management
     command: >
       sh -c "
-        echo 'Waiting for PostgreSQL...' &&
-        while ! nc -z postgis 5432; do
-          sleep 1
-          echo 'Still waiting for PostgreSQL...'
-        done &&
-        echo 'PostgreSQL is up!' &&
         conda run -n env python manage.py migrate &&
         conda run -n env python manage.py runserver 0.0.0.0:8001
       "
@@ -94,7 +89,6 @@ services:
 volumes:
   my_pgadmin4_data: {}
   my_first_spatialdb_data: {}
-  postgres_data: {}
 
 networks:
   geodjango_tutorial:
