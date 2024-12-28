@@ -5,8 +5,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d  # Mount the entire conf.d directory
-      - ./nginx/certs:/etc/nginx/certs      # Mount the certs directory
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/nginx/certs     # Mount the certs directory
     depends_on:
       - pgadmin4
       - postgis
@@ -36,12 +37,7 @@ services:
       POSTGRES_DB: postgis
       POSTGRES_USER: docker
       POSTGRES_PASSWORD: docker
-      POSTGRES_HOST_AUTH_METHOD: md5  # Changed to md5
-    healthcheck:
-      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "docker"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      POSTGRES_HOST_AUTH_METHOD: md5
     volumes:
       - my_first_spatialdb_data:/var/lib/postgresql
     networks:
@@ -63,14 +59,13 @@ services:
       python manage.py runserver 0.0.0.0:8001"
     networks:
       - geodjango_tutorial
-      
-  # cannot use ssl if using localhost
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certs:/etc/letsencrypt
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./certbot/www:/var/www/certbot
+  #     - ./certbot/conf:/etc/letsencrypt
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   my_pgadmin4_data: {}
