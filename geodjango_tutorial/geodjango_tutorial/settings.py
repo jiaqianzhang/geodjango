@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+from pathlib import Path
 # import os
 # GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/anaconda3/envs/awm_env')
 # GDAL Settings
@@ -221,14 +222,15 @@ WSGI_APPLICATION = "geodjango_tutorial.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 # settings.py
+# Database Configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgis',
-        'USER': 'docker',
-        'PASSWORD': 'docker',
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # Use environment variable or default to localhost
-        'PORT': '5432',
+        'NAME': os.getenv('POSTGRES_DB', 'postgis'),
+        'USER': os.getenv('POSTGRES_USER', 'docker'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'docker'),
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
