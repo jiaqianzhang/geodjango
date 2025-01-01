@@ -11,7 +11,7 @@ services:
     depends_on:
       - awm_django_app
     networks:
-      - geodjango_tutorial
+      - app_network
 
   awm_django_app:
     image: geodjango_tutorial
@@ -44,7 +44,7 @@ services:
         exec python -u manage.py runserver 0.0.0.0:8001
       "
     networks:
-      - geodjango_tutorial
+      - app_network
 
   postgis:
     image: postgis/postgis
@@ -57,7 +57,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - geodjango_tutorial
+      - app_network
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -71,7 +71,7 @@ services:
     depends_on:
       - postgis
     networks:
-      - geodjango_tutorial
+      - app_network
 
   certbot:
     image: certbot/certbot
@@ -81,11 +81,13 @@ services:
     depends_on:
       - nginx
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - app_network
 
 volumes:
   postgres_data:
   pgadmin_data:
 
 networks:
-  geodjango_tutorial:
+  app_network:
     driver: bridge
