@@ -38,7 +38,7 @@
 {% endblock %}
 
 {% block extra_javascript %}
-<script src="{% static 'js/cafe-map.js' %}"></script>
+<script src="{% static 'js/cafe-map.js' %}?v={% now 'U' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
