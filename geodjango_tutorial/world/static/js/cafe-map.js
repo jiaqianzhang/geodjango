@@ -287,26 +287,28 @@ class CafeMap {
                 throw new Error('offline');
             }
             console.log('Fetching cafes for:', latitude, longitude);
-
+    
             const response = await fetch(`/map/?latitude=${latitude}&longitude=${longitude}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const data = await response.json();
             console.log('Received cafe data:', data);
-
+    
+            // Check for data.cafes since your view returns { cafes: [...], source: '...' }
             if (data.cafes && Array.isArray(data.cafes)) {
                 this.displayCafes(data.cafes);
+                console.log('Data source:', data.source); // Log whether from cache or Google Places
             } else {
                 this.displayNoCafesMessage();
             }
-
+    
         } catch (error) {
             console.error('Error fetching cafes:', error);
             if (error.message === 'offline') {
@@ -316,7 +318,7 @@ class CafeMap {
             }
         }
     }
-
+    
     
     // Helper function to get CSRF token
     getCsrfToken() {

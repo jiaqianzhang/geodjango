@@ -9,13 +9,27 @@ class GooglePlacesService:
     def __init__(self):
         self.api_key = settings.GOOGLE_MAPS_API_KEY
         self.base_url = "https://maps.googleapis.com/maps/api/place"
+        logger.debug(f"Initialized GooglePlacesService with base_url: {self.base_url}")
 
     def get_nearby_cafes(self, lat: float, lon: float, radius: int = 1000) -> list:
         """
         Search for cafes using Google Places API
         """
+        if not self.api_key:
+            logger.error("No Google Places API key configured")
+            raise ValueError("Google Places API key is not configured")
+
+
         try:
+            # Log the exact values received
+            logger.debug(f"get_nearby_cafes received: lat={lat} ({type(lat)}), lon={lon} ({type(lon)})")
+        
             endpoint = f"{self.base_url}/nearbysearch/json"
+
+            location_str = f"{lat},{lon}"
+
+            logger.debug(f"Constructed location string: {location_str}")
+
             
             params = {
                 'location': f"{lat},{lon}",
@@ -24,7 +38,7 @@ class GooglePlacesService:
                 'keyword': 'coffee',
                 'key': self.api_key
             }
-
+            logger.debug(f"Full request params (excluding key): {dict(list(params.items())[:-1])}")
             logger.info(f"Calling Google Places API with params: {params}")
             
             response = requests.get(

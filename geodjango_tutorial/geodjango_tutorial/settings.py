@@ -30,6 +30,7 @@ LOGIN_URL = 'login'
 # API Keys
 GOOGLE_MAPS_API_KEY = 'AIzaSyBSxFdTUu9DcsI1fU1n5nBBZQyb9OxKnfE'
 
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

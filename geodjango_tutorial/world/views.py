@@ -59,25 +59,33 @@ def map_view(request):
     
     # Handle fetch request for cafes
     if request.headers.get('Accept') == 'application/json':
+        # Log all request parameters
+        logger.debug(f"Request GET parameters: {request.GET}")
+        logger.debug(f"Request headers: {request.headers}")
+        
         try:
             lat = request.GET.get('latitude')
             lon = request.GET.get('longitude')
+            logger.debug(f"Extracted lat={lat}, lon={lon}")
+
+            # Add type checking
+            try:
+                float_lat = float(lat)
+                float_lon = float(lon)
+                logger.debug(f"Converted lat={float_lat}, lon={float_lon}")
+            except (TypeError, ValueError) as e:
+                logger.error(f"Error converting coordinates: {e}")
+                return JsonResponse({'error': 'Invalid coordinates'}, status=400)
+
+
             radius = request.GET.get('radius', 1000)
 
             if not all([lat, lon]):
                 return JsonResponse({'error': 'Latitude and longitude are required'}, status=400)
 
-            # Cache key based on location and radius
-            cache_key = f'cafes_lat{lat}_lon{lon}_rad{radius}'
-            cached_results = cache.get(cache_key)
+            # Log before Google Places call
+            logger.debug("About to call Google Places Service")
             
-            if cached_results:
-                logger.info("Returning cached cafe results")
-                return JsonResponse({
-                    'cafes': cached_results,
-                    'source': 'cache'
-                })
-
             service = GooglePlacesService()
             cafes = service.get_nearby_cafes(
                 lat=float(lat),
@@ -85,7 +93,11 @@ def map_view(request):
                 radius=int(radius)
             )
             
-            # Cache the results for a reasonable time (e.g., 1 hour)
+            # Log after successful Google Places call
+            logger.debug(f"Successfully retrieved {len(cafes) if cafes else 0} cafes")
+
+            # Cache the results
+            cache_key = f'cafes_lat{lat}_lon{lon}_rad{radius}'
             cache.set(cache_key, cafes, timeout=3600)
             
             return JsonResponse({
@@ -94,7 +106,10 @@ def map_view(request):
             })
 
         except Exception as e:
+            # Add full traceback logging
+            import traceback
             logger.error(f"Error fetching cafes: {str(e)}")
+            logger.error(f"Full traceback: {traceback.format_exc()}")
             return JsonResponse({'error': str(e)}, status=500)
     
     # Regular page load
