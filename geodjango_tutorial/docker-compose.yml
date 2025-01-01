@@ -85,9 +85,13 @@ services:
       - nginx
     networks:
       - geodjango_tutorial
+
+
 volumes:
   my_pgadmin4_data: {}
   postgres_data: {}
 
 networks:
   geodjango_tutorial:
+    driver: bridge  # Optional, but can specify bridge network
+
