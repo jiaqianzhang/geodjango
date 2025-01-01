@@ -30,6 +30,7 @@ services:
 
   postgis:
     image: kartoza/postgis
+    platform: linux/amd64
     ports:
       - "5432:5432"
     environment: 
@@ -44,7 +45,7 @@ services:
       - geodjango_tutorial
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-h", "postgis", "-U", "docker"]
+      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
       interval: 10s
       timeout: 5s
       retries: 5
