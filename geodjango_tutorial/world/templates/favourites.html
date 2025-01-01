@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_js %}
-<script src="{% static 'js/favourites.js' %}"></script>
+<script src="{% static 'js/favourites.js' %}?v={% now 'U' %}"></script>
 {% endblock %}
 
 {% block content %}
