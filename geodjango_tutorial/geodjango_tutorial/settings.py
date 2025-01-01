@@ -136,7 +136,7 @@ WSGI_APPLICATION = 'geodjango_tutorial.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': '0.0.0.0',
+        'HOST': 'postgis',
         'PORT': '5432',
         'NAME': 'gis',
         'USER': 'docker',
@@ -226,7 +226,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': '/app/debug.log',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
             'formatter': 'verbose',
         },
     },
