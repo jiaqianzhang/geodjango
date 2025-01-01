@@ -222,10 +222,10 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'simple',  # Use 'simple' for minimal logging
         },
         'file': {
-            'level': 'DEBUG',
+            'level': 'ERROR',  # Log only errors to the file
             'class': 'logging.FileHandler',
             'filename': '/home/ubuntu/geodjango/geodjango_tutorial/debug.log',
         },
@@ -233,20 +233,12 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'ERROR',  # Log only errors
             'propagate': True,
         },
-        'world': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
     },
 }
+
 
 # Security Settings
 # if not DEBUG:

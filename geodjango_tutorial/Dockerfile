@@ -13,6 +13,8 @@ WORKDIR /app
 COPY ENV.yml .
 RUN conda env create -f ENV.yml
 
+RUN mkdir -p /home/ubuntu/geodjango/geodjango_tutorial
+
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
