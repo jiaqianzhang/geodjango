@@ -19,6 +19,7 @@ RUN touch /app/debug.log && \
 RUN apt-get update && \
     apt-get install -y \
     curl \
+    netcat-openbsd \
     build-essential \
     python3-dev \
     gdal-bin \

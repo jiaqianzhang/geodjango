@@ -27,24 +27,6 @@ services:
     networks:
       - geodjango_tutorial
 
-  postgis:
-    image: postgis/postgis
-    environment:
-      - POSTGRES_DB=gis
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d gis"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - geodjango_tutorial
-
   awm_django_app:
     image: geodjango_tutorial
     build: .
@@ -58,26 +40,28 @@ services:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_HOST=postgis
       - DJANGO_ALLOWED_HOSTS=jiaqianzhang.site,www.jiaqianzhang.site,localhost,127.0.0.1
-      - DJANGO_DEBUG=0
+      - DJANGO_DEBUG=1  # Set to 1 temporarily for debugging
+      - PYTHONUNBUFFERED=1  # This ensures Python output isn't buffered
     volumes:
       - .:/app
-      - ./wait-for-it.sh:/wait-for-it.sh  # Mount wait-for-it script
     ports:
       - "8001:8001"
     depends_on:
-      - postgis
+      postgis:
+        condition: service_healthy  # Add this back but with proper PostgreSQL health check
     command: >
-      sh -c "
-        chmod +x /wait-for-it.sh &&
-        /wait-for-it.sh postgis:5432 --timeout=30 --strict --
+      bash -c "
+        echo 'Waiting for PostgreSQL...' &&
+        while ! nc -z postgis 5432; do
+          sleep 1
+        done &&
+        echo 'PostgreSQL is up!' &&
         conda run -n env python manage.py migrate &&
         conda run -n env python manage.py runserver 0.0.0.0:8001
       "
     networks:
       - geodjango_tutorial
 
-
-  
   certbot:
     image: certbot/certbot
     volumes:
