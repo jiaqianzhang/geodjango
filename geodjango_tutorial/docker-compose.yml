@@ -89,11 +89,12 @@ services:
       --email c21408862@mytudublin.com
       --agree-tos
       --no-eff-email
-      --staging
-      --non-interactive
+      --force-renewal
       -d jiaqianzhang.site
+      -d www.jiaqianzhang.site
     networks:
       - geodjango_tutorial
+
 
 
 
