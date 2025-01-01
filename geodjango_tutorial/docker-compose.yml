@@ -82,7 +82,17 @@ services:
       - ./certbot/conf:/etc/letsencrypt:rw
     depends_on:
       - nginx
-    command: certonly --webroot --webroot-path=/var/www/certbot --agree-tos --no-eff-email --staging
+    command: >
+      certonly --webroot 
+      --webroot-path=/var/www/certbot 
+      --email c21408862@mytudublin.com  # Replace with your actual email
+      --agree-tos 
+      --no-eff-email 
+      --staging
+      --non-interactive
+    networks:
+      - geodjango_tutorial
+
 
 
 volumes:
