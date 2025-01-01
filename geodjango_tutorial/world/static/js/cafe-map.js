@@ -105,6 +105,40 @@ class CafeMap {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
     }
 
+    async fetchFavoritedCafes() {
+        try {
+            const response = await fetch('/favourites/', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.favorites;
+        } catch (error) {
+            console.error('Error fetching favourites:', error);
+            throw error;
+        }
+    }
+
+    async loadFavoritedCafes() {
+        try {
+            const favorites = await this.fetchFavoritedCafes();
+            this.favoritedCafes.clear();
+            favorites.forEach(cafe => {
+                this.favoritedCafes.add(cafe.place_id);
+            });
+        } catch (error) {
+            console.error('Error loading favorites:', error);
+            // Don't throw error here to allow map to still load
+        }
+    }
+
     // Utility function used by both regular map and favorites
     async toggleFavorite(cafe) {
         try {

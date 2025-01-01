@@ -95,9 +95,30 @@ def map_view(request):
 
 @login_required
 def favourite_cafes(request):
-    """View for displaying favorite cafes page"""
+    """View for displaying favorite cafes page and API endpoint for fetching favorites"""
     favorites = FavouriteCafe.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Handle AJAX requests
+    if request.headers.get('Accept') == 'application/json':
+        favorites_data = [{
+            'place_id': fav.cafe_id,
+            'name': fav.name,
+            'address': fav.address,
+            'lat': fav.lat,
+            'lon': fav.lon,
+            'rating': fav.rating,
+            'user_ratings_total': fav.user_ratings_total,
+            'phone': fav.phone,
+            'website': fav.website
+        } for fav in favorites]
+        
+        return JsonResponse({
+            'favorites': favorites_data
+        })
+    
+    # Handle regular page requests
     return render(request, 'favourites.html', {'favorites': favorites})
+
 
 @login_required
 def toggle_favourite(request):
