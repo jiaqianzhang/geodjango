@@ -28,7 +28,7 @@ services:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_HOST=postgis
-      - DJANGO_ALLOWED_HOSTS=*  # Change this to allow all hosts temporarily
+      - DJANGO_ALLOWED_HOSTS=*
       - DJANGO_DEBUG=1
       - PYTHONUNBUFFERED=1
       - DJANGO_LOG_LEVEL=DEBUG
@@ -37,19 +37,23 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - postgis
+      postgis:
+        condition: service_started
     command: >
       bash -c '
-        echo "Starting Django setup..." &&
+        echo "[$(date)] Starting container..." &&
         cd /app &&
-        conda run -n env python manage.py check &&
-        conda run -n env python manage.py migrate --noinput &&
-        echo "Starting Django development server..." &&
-        conda run -n env python manage.py runserver 0.0.0.0:8001 --noreload
+        echo "[$(date)] Current directory: $$(pwd)" &&
+        echo "[$(date)] Activating conda environment..." &&
+        source /opt/conda/etc/profile.d/conda.sh &&
+        conda activate env &&
+        echo "[$(date)] Running Django checks..." &&
+        python manage.py check --verbosity 3 &&
+        echo "[$(date)] Starting Django server..." &&
+        exec python manage.py runserver 0.0.0.0:8001 --verbosity 3
       '
     networks:
       - geodjango_tutorial
-
 
   postgis:
     image: postgis/postgis
