@@ -10,7 +10,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt:rw   # Changed to rw
     user: root
     depends_on:
-      - awm_django_app
+      awm_django_app:
+        condition: service_healthy
     networks:
       - geodjango_tutorial
 
@@ -58,6 +59,8 @@ services:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_HOST=postgis
+      - DJANGO_ALLOWED_HOSTS=jiaqianzhang.site,www.jiaqianzhang.site,localhost,127.0.0.1
+      - DJANGO_DEBUG=0
     volumes:
       - .:/app
     ports:
@@ -72,6 +75,12 @@ services:
       "
     networks:
       - geodjango_tutorial
+      healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 
   
@@ -93,5 +102,5 @@ volumes:
 
 networks:
   geodjango_tutorial:
-    driver: bridge  # Optional, but can specify bridge network
+    # external: true
 
