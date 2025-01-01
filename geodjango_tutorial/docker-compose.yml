@@ -89,3 +89,6 @@ services:
 volumes:
   postgres_data:
   pgadmin_data:
+
+networks:
+  geodjango_tutorial:
