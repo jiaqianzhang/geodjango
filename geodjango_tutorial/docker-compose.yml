@@ -9,8 +9,7 @@ services:
       - ./certbot/www:/var/www/certbot:rw    # Changed to rw
       - ./certbot/conf:/etc/letsencrypt:rw   # Changed to rw
     depends_on:
-      awm_django_app:
-        condition: service_healthy
+      - awm_django_app
     networks:
       - geodjango_tutorial
 
