@@ -20,7 +20,7 @@ RUN apt-get update && \
     conda clean -a && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Activate the environment
+# Set up the shell to activate the environment
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
 # Set GDAL environment variables
@@ -34,5 +34,5 @@ COPY . /app
 # Expose the Django development server port
 EXPOSE 8001
 
-# Run migrations and start the server
-CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
+# Run migrations and start the server using conda activate
+CMD ["bash", "-c", "source activate env && python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
