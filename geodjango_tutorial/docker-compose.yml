@@ -75,7 +75,7 @@ services:
       "
     networks:
       - geodjango_tutorial
-      healthcheck:
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001"]
       interval: 30s
       timeout: 10s
