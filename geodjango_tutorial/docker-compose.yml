@@ -82,8 +82,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt:rw
     depends_on:
       - nginx
-    networks:
-      - geodjango_tutorial
+    command: certonly --webroot --webroot-path=/var/www/certbot --agree-tos --no-eff-email --staging
+
 
 volumes:
   postgres_data:
