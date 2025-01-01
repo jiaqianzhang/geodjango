@@ -82,7 +82,7 @@ services:
       - geodjango_tutorial
 volumes:
   my_pgadmin4_data: {}
-  my_first_spatialdb_data: {}
+  postgres_data: {}
 
 networks:
   geodjango_tutorial:
