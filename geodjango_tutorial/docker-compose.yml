@@ -8,6 +8,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:rw
       - ./certbot/www:/var/www/certbot:rw
       - ./certbot/conf:/etc/letsencrypt:rw
+      - ./staticfiles:/staticfiles:ro  # Add this if not present
     depends_on:
       - awm_django_app
     networks:
@@ -31,6 +32,7 @@ services:
       - DJANGO_LOG_LEVEL=DEBUG
     volumes:
       - .:/app
+      - ./staticfiles:/staticfiles  # Add this if not present
     ports:
       - "8001:8001"
     depends_on:
