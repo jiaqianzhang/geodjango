@@ -127,7 +127,7 @@
     <script src="{% static 'leaflet/leaflet.js' %}"></script>
 
     <!-- PWA Install Script -->
-    <script src="{% static 'js/pwa-install.js' %}"></script>
+    <script src="{% static 'js/pwa-install.js' %}?v={% now 'U' %}"></script>
     
     <!-- Extra JavaScript -->
     {% block extra_javascript %}{% endblock %}

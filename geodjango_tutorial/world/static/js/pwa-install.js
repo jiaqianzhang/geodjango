@@ -9,12 +9,38 @@ class PWAInstaller {
         this.installButton = document.getElementById('pwaInstallBtn');
         this.installMessage = this.installContainer?.querySelector('p');
         this.init();
+        this.debugInstallState(); // Add this
+    }
+
+    debugInstallState() {
+        console.log('Debugging PWA install state:');
+        console.log('- In standalone mode:', window.matchMedia('(display-mode: standalone)').matches);
+        console.log('- Install button exists:', !!this.installButton);
+        console.log('- Install container exists:', !!this.installContainer);
+        console.log('- Install prompt available:', !!this.installPrompt);
+        
+        // Check if installed through platform-specific APIs
+        if ('getInstalledRelatedApps' in navigator) {
+            navigator.getInstalledRelatedApps().then(apps => {
+                console.log('- Installed related apps:', apps);
+            });
+        }
+    }
+    showInstallButton() {
+        if (this.installContainer) {
+            // Force show for testing
+            this.installContainer.style.display = 'block';
+            console.log('Install button shown');
+        }
     }
 
     init() {
+        // Force show the install button for testing
+        this.showInstallButton();
         // Check if the app is already installed first
         if (window.matchMedia('(display-mode: standalone)').matches) {
             this.showInstalledMessage();
+            console.log('Already running in standalone mode');
             return;
         }
 
