@@ -55,7 +55,6 @@ services:
     image: geodjango_tutorial
     build: .
     environment:
-      - PROJ_LIB=/opt/conda/envs/env/share/proj
       - DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
       - PYTHONUNBUFFERED=1
       - POSTGRES_DB=gis

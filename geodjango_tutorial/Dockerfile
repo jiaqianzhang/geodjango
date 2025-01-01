@@ -2,41 +2,37 @@ FROM continuumio/miniconda3
 
 LABEL maintainer="Bujar Raufi"
 
-# I use the geodjango_tutorial as my project name adjust to your project name
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
+ENV PYTHONPATH="/app"
 
+# Create and set the working directory
 RUN mkdir -p /app
 WORKDIR /app
 
-# Install GDAL dependencies
-RUN apt-get update && \
-    apt-get install -y \
-    gdal-bin \
-    libgdal-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create the environment:
+# Install GDAL and dependencies via Conda
 COPY ENV.yml .
-RUN conda env create -f ENV.yml
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential && \
+    conda env create -f ENV.yml && \
+    conda clean -a && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Make RUN commands use the new environment:
+# Activate the environment
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
-# Set GDAL environment variable (optional, but often required for GDAL and pyproj to work properly)
+# Set GDAL environment variables
 ENV GDAL_VERSION=3.9.3
 ENV PROJ_LIB=/opt/conda/envs/env/share/proj
+ENV GDAL_DATA=/opt/conda/envs/env/share/gdal
 
-# Copy everything in your Django project to the image.
+# Copy the project files
 COPY . /app
-ENV PYTHONPATH="/app"
 
-# The code to run when container is started:
-COPY manage.py .
-ENTRYPOINT ["conda", "run", "-n", "env"]
-
-# Exposing the port that the container will operate feel free to change is port is taken
+# Expose the Django development server port
 EXPOSE 8001
 
-# Start the server when the container starts
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
+# Run migrations and start the server
+CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
