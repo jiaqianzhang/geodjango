@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   nginx:
     image: nginx:latest
@@ -5,29 +7,16 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:rw  # Changed to rw
-      - ./certbot/www:/var/www/certbot:rw    # Changed to rw
-      - ./certbot/conf:/etc/letsencrypt:rw   # Changed to rw
+      - ./nginx/conf.d:/etc/nginx/conf.d:rw
+      - ./certbot/www:/var/www/certbot:rw
+      - ./certbot/conf:/etc/letsencrypt:rw
+    user: root
     depends_on:
       - awm_django_app
     networks:
       - geodjango_tutorial
 
-  pgadmin4:
-    image: dpage/pgadmin4
-    ports:
-      - "20080:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: docker@example.com
-      PGADMIN_DEFAULT_PASSWORD: docker
-    volumes:
-      - my_pgadmin4_data:/var/lib/pgadmin4
-    depends_on:
-      - postgis
-    networks:
-      - geodjango_tutorial
-
-   awm_django_app:
+  awm_django_app:
     image: geodjango_tutorial
     build: .
     environment:
@@ -51,23 +40,12 @@ services:
     command: >
       bash -c '
         echo "Starting Django setup..." &&
-        conda run -n env python -c "
-          import sys;
-          print('Python path:', sys.executable);
-          print('Starting Django server...')
-        " &&
         conda run -n env python manage.py migrate --noinput &&
         echo "Starting Django development server..." &&
         conda run -n env python manage.py runserver 0.0.0.0:8001
       '
-    tty: true
-    stdin_open: true
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
+    networks:
+      - geodjango_tutorial
 
   postgis:
     image: postgis/postgis
@@ -79,33 +57,37 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d gis"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     networks:
       - geodjango_tutorial
 
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=docker@example.com
+      - PGADMIN_DEFAULT_PASSWORD=docker
+    ports:
+      - "20080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgis
+    networks:
+      - geodjango_tutorial
 
-  
   certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/www:/var/www/certbot:rw
       - ./certbot/conf:/etc/letsencrypt:rw
-    command: renew --noninteractive --webroot --webroot-path=/var/www/certbot
     depends_on:
       - nginx
     networks:
       - geodjango_tutorial
 
-
 volumes:
-  my_pgadmin4_data: {}
-  postgres_data: {}
+  postgres_data:
+  pgadmin_data:
 
 networks:
   geodjango_tutorial:
-    # external: true
-
+    driver: bridge
