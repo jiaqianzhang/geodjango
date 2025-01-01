@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_js %}
+<script src="{% static 'js/favourites.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% csrf_token %}
+    <h2 class="mb-4">My Favourite Cafes</h2>
+    {% if favorites %}
+        <div class="favorite-cafe-list">
+            <div class="row">
+                {% for cafe in favorites %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="cafe-card">
+                            <div class="cafe-header">
+                                <h5>{{ cafe.name }}</h5>
+                                <button class="btn-unfavorite" data-cafe-id="{{ cafe.cafe_id }}">
+                                    <i class="fas fa-heart-broken"></i>
+                                </button>
+                            </div>
+                        
+                            <p class="address" title="{{ cafe.address }}">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ cafe.address }}
+                            </p>
+                        
+                            <div class="meta-info">
+                                {% if cafe.rating %}
+                                    <span class="rating">
+                                        <i class="fas fa-star"></i>
+                                        {{ cafe.rating }}/5
+                                    </span>
+                                {% endif %}
+                            </div>
+                        
+                            {% if cafe.phone %}
+                                <p class="contact-info" title="{{ cafe.phone }}">
+                                    <i class="fas fa-phone"></i>
+                                    {{ cafe.phone }}
+                                </p>
+                            {% endif %}
+                        
+                            {% if cafe.website %}
+                                <p class="contact-info">
+                                    <i class="fas fa-globe"></i>
+                                    <a href="{{ cafe.website }}" target="_blank" rel="noopener noreferrer">Visit Website</a>
+                                </p>
+                            {% endif %}
+                        </div>                    
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-heart text-muted mb-4" style="font-size: 3rem;"></i>
+            <h3 class="mb-3">No Favourite Cafes Yet</h3>
+            <p class="text-muted mb-4">Start exploring cafes and add them to your favourites!</p>
+            <a href="{% url 'map' %}" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Find Cafes
+            </a>
+        </div>
+    {% endif %}
+</div>
+<style>
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    color: white;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+
+    .cafe-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        height: 250px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .cafe-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    
+    .cafe-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+        line-height: 1.3;
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    /* Address specific styling */
+    .cafe-card .address {
+        margin: 8px 0;
+        color: #666;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Show maximum of 2 lines */
+        -webkit-box-orient: vertical;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+    
+    /* Other info (phone, website) styling */
+    .cafe-card .contact-info {
+        margin: 8px 0;
+        color: #666;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .btn-unfavorite {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 5px;
+        flex-shrink: 0;
+    }
+    
+    .meta-info {
+        display: flex;
+        gap: 15px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+    }
+    
+    .rating {
+        color: #ffc107;
+        white-space: nowrap;
+    }
+    
+    .cafe-card i {
+        margin-right: 8px;
+        width: 16px;
+        text-align: center;
+    }
+    
+    .cafe-card a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .cafe-card a:hover {
+        text-decoration: underline;
+    }
+    
+    .col-md-6.col-lg-4 {
+        margin-bottom: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .row {
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+    </style>
+{% endblock %}

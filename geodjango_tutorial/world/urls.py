@@ -1,33 +1,22 @@
 from django.urls import path, include
 from . import views
-from .views import HotelUpdateRetreiveView, ListCreateGenericViews, PWAView
-from rest_framework import routers
-from . import views as api_views  # assuming the views for your API are imported here
+from django.contrib.staticfiles.views import serve
+from django.views.generic import TemplateView
+from django.shortcuts import redirect
 
-# Create the router instance
-router = routers.DefaultRouter()
-router.register(r'ElectoralDistricts', api_views.ElectoralDistrictsViewSet)
-router.register(r'Counties', api_views.CountiesViewSet)
+def redirect_to_map(request):
+    return redirect('map')
+
 
 urlpatterns = [
-    # Regular views
-    path('map/', views.map_view, name='index'),
+    path('', redirect_to_map, name='root'),
+    path('map/', views.map_view, name='map'),
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
-    path('update_location/', views.update_location, name='update_location'),
-    path('nearby/', views.nearby_cafes, name='nearby_cafes'),
-
-    # Hotel-related views (generic class-based views)
-    path("hotels", ListCreateGenericViews.as_view()),
-    path("hotels/<str:pk>", HotelUpdateRetreiveView.as_view()),
-
-    # PWA view
-    path('pwa/', PWAView.as_view(), name='pwa'),
-
-    # API URLs (prefixed with /api/v1/)
-    path('api/v1/', include(router.urls)),  # API views for ElectoralDistricts and Counties
-
-    # Do not include api-auth here if already included in the project-level urls.py
-    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),  # REMOVE this line
+    path('serviceworker.js', serve, {'path': 'js/serviceworker.js'}),
+    path('manifest.json', serve, {'path': 'manifest.json'}),
+    path('offline/', TemplateView.as_view(template_name="offline.html"), name='offline'),
+    path('favourites/', views.favourite_cafes, name='favourite_cafes'),  # Route to display favorites page
+    path('favourite/', views.toggle_favourite, name='toggle_favourite'),  # Route for AJAX toggle action
 ]

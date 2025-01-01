@@ -1,21 +1,23 @@
+"""geodjango_tutorial URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.1/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    # Django admin
     path('admin/', admin.site.urls),
-
-    # Include your app's URLs (this is where all your app's URLs are handled)
-    path('', include('world.urls')),  # Your app's URLs
-
-    # API URLs for your models (ElectoralDistricts and Counties) under the /api/v1/ prefix
-    path("api/v1/", include('world.urls')),  # API URLs prefixed with /api/v1/
-
-    # Optionally, if you want to include the DRF auth URLs for session-based authentication
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
-    # Add any other necessary URLs (like for PWA or other apps)
-    # path('cafes/', include('cafes.urls')),
-    # path('', include('posts.urls')),
-    # path('', include('pwa.urls')),
+    path('', include('world.urls')),
+    
 ]

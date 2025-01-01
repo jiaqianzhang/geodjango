@@ -1,112 +1,73 @@
 from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Point # create/update a user's profile to include a location
-from django.db import models
-from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-class WorldBorder(models.Model):
-    # Regular Django fields corresponding to the attributes in the
-    # world borders shapefile.
-    name = models.CharField(max_length=50)
-    area = models.IntegerField()
-    pop2005 = models.IntegerField('Population 2005')
-    fips = models.CharField('FIPS Code', max_length=2, null=True)
-    iso2 = models.CharField('2 Digit ISO', max_length=2)
-    iso3 = models.CharField('3 Digit ISO', max_length=3)
-    un = models.IntegerField('United Nations Code')
-    region = models.IntegerField('Region Code')
-    subregion = models.IntegerField('Sub-Region Code')
-    lon = models.FloatField()
-    lat = models.FloatField()
- 
-    # GeoDjango-specific: a geometry field (MultiPolygonField)
-    mpoly = models.MultiPolygonField()
- 
-    # Returns the string representation of the model.
-    def __str__(self):
-        return self.name
-    
-# storing a point location on a user's profile
-# create profile table 
-# make it a 1 to 1 relationship with the user model
-
-# create a field location
-# use get user model() for this
 User = get_user_model()
 
-# define the profile model by creating a 1 to 1 relationship with the user model
-class Profile(models.Model):
+class FavouriteCafe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cafe_id = models.CharField(max_length=255)  # Google Places ID
+    name = models.CharField(max_length=255)
+    address = models.TextField()
+    lat = models.FloatField()
+    lon = models.FloatField()
+    rating = models.FloatField(null=True, blank=True)
+    user_ratings_total = models.IntegerField(null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True, blank=True)
+    website = models.URLField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'cafe_id')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.name}"
+    
+
+class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.PointField(null=True, blank=True)
- 
+    favorite_cafes = models.ManyToManyField(FavouriteCafe, related_name='favourited_by')
+    last_location = models.PointField(null=True)
+
     def __str__(self):
-        return self.user.username
-    
-    # function to set user location with user id, latitude and longitude
-    def set_user_location(user_id, latitude, longitude):
+        return f"{self.user.username}'s profile"
+
+    @classmethod
+    def set_user_location(cls, user_id, latitude, longitude):
         user = User.objects.get(id=user_id)
         location = Point(longitude, latitude)  # Point takes (longitude, latitude)
-    
+        
         # Create or update the user's profile
-        profile, created = Profile.objects.get_or_create(user=user)
+        profile, created = cls.objects.get_or_create(user=user)
         profile.location = location
+        profile.last_location = location  # Update both location fields
         profile.save()
-    
+        
         return profile
- 
- 
-class Hotel(models.Model):
-    name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    location = models.PointField(null=True) # Spatial Field Types
- 
-    def __str__(self) -> str:
-        return self.name
-    
-class ElectoralDistricts(models.Model):
-    osm_id = models.BigIntegerField()
-    name_tag = models.CharField(max_length=255)
-    name_ga = models.CharField(max_length=255, blank=True, null=True)
-    name_en = models.CharField(max_length=255, blank=True, null=True)
-    alt_name = models.CharField(max_length=255, blank=True, null=True)
-    alt_name_g = models.CharField(max_length=255, blank=True, null=True)
-    osm_user = models.CharField(max_length=255, blank=True, null=True)
-    osm_timest = models.CharField(max_length=255, blank=True, null=True)  # Change to CharField
-    attributio = models.CharField(max_length=255, blank=True, null=True)
-    logainm_re = models.CharField(max_length=255, blank=True, null=True)
-    co_name = models.CharField(max_length=255, blank=True, null=True)
-    co_osm_id = models.FloatField(blank=True, null=True)  # Change to FloatField
-    t_ie_url = models.URLField(max_length=255, blank=True, null=True)
-    area = models.FloatField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    epoch_tstm = models.FloatField(blank=True, null=True)  # Change to FloatField
-    geom = models.PointField(srid=4326)
 
-    def __str__(self):
-        return self.name_en or "Unknown"
+# Signal handlers
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Create a Profile instance when a new User is created"""
+    if created:
+        UserProfile.objects.create(
+            user=instance,
+            location=Point(0, 0),  # Default location at (0,0)
+            last_location=Point(0, 0)
+        )
 
-
-class Counties(models.Model):
-    osm_id = models.FloatField()  # Change from CharField to FloatField
-    name_tag = models.CharField(max_length=255)
-    name_ga = models.CharField(max_length=255, blank=True, null=True)
-    name_en = models.CharField(max_length=255, blank=True, null=True)
-    alt_name = models.CharField(max_length=255, blank=True, null=True)
-    alt_name_g = models.CharField(max_length=255, blank=True, null=True)
-    logainm_re = models.CharField(max_length=255, blank=True, null=True)
-    osm_user = models.CharField(max_length=255, blank=True, null=True)
-    osm_timest = models.CharField(max_length=255, blank=True, null=True)  # Keep as CharField for now
-    attributio = models.CharField(max_length=255, blank=True, null=True)
-    t_ie_url = models.URLField(max_length=255, blank=True, null=True)
-    area = models.FloatField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    epoch_tstm = models.FloatField(blank=True, null=True)  # Keep as FloatField, matching the shapefile
-    geom = models.MultiPolygonField(srid=4326)  # Changed to MultiPolygonField
-
-
-    def __str__(self):
-        return self.name_en if self.name_en else "Unknown"
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Save the Profile instance whenever the User is saved"""
+    try:
+        instance.userprofile.save()
+    except UserProfile.DoesNotExist:
+        # Create profile if it doesn't exist
+        UserProfile.objects.create(
+            user=instance,
+            location=Point(0, 0),
+            last_location=Point(0, 0)
+        )

@@ -1,16 +1,202 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% load custom_filters %}
 {% block title %}Sign Up {% endblock %}
 
+{% block extra_css %}
+<style>
+/* Specific styles for signup form */
+#signupForm .btn.btn-primary,
+.card .btn.btn-primary {
+    background-color: #e74c3c !important;
+    border-color: #e74c3c !important;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+#signupForm .btn.btn-primary:hover,
+.card .btn.btn-primary:hover {
+    background-color: #d44235 !important;
+    border-color: #c0392b !important;
+    transform: translateY(-1px);
+}
+
+#signupForm .btn.btn-primary:active,
+#signupForm .btn.btn-primary:focus,
+.card .btn.btn-primary:active,
+.card .btn.btn-primary:focus {
+    background-color: #c0392b !important;
+    border-color: #c0392b !important;
+    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25) !important;
+}
+
+/* Additional specific styles for the signup page */
+.container .card .btn-primary {
+    background-color: #e74c3c !important;
+    border-color: #e74c3c !important;
+}
+
+.container .card .btn-primary:hover {
+    background-color: #d44235 !important;
+    border-color: #c0392b !important;
+}
+/* Link styles */
+.text-muted a {
+    color: #e74c3c;  /* Changed to match navbar */
+}
+
+.text-muted a:hover {
+    color: #c0392b;  /* Darker shade of navbar color */
+    text-decoration: underline !important;
+}
+
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Form Control Styles */
+.form-control {
+    border-radius: 7px;
+    padding: 12px;
+    border: 1px solid #e1e1e1;
+    min-height: 44px; /* Improve touch targets */
+}
+
+.form-control:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 7px;
+    min-height: 44px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #d44235;
+    border-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* Label Styles */
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Link Styles */
+.text-decoration-none {
+    color: #e74c3c;
+    transition: color 0.2s ease;
+}
+
+.text-decoration-none:hover {
+    color: #c0392b;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="text-center">Sign Up</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-        </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Create Account</h2>
+                    <form method="post" id="signupForm" action="{% url 'signup' %}">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ form.username|addclass:"form-control" }}
+                            {% if form.username.help_text %}
+                            <small class="form-text text-muted">{{ form.username.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+                            {{ form.password1|addclass:"form-control" }}
+                            {% if form.password1.help_text %}
+                            <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                            {{ form.password2|addclass:"form-control" }}
+                            {% if form.password2.help_text %}
+                            <small class="form-text text-muted">{{ form.password2.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-2 mt-3">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up
+                        </button>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted">
+                            Already have an account? 
+                            <a href="{% url 'login' %}" class="text-decoration-none">Log in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+
+{% block extra_javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const signupForm = document.getElementById('signupForm');
+    if (!signupForm) {
+        console.error('Signup form not found');
+        return;
+    }
+
+    const submitButton = signupForm.querySelector('button[type="submit"]');
+    if (!submitButton) {
+        console.error('Submit button not found');
+        return;
+    }
+
+    // Listen for connection status changes
+    window.addEventListener('connectionStatusChanged', (event) => {
+        const isOnline = event.detail.isOnline;
+        submitButton.disabled = !isOnline;
+        
+        if (!isOnline) {
+            signupForm.classList.add('disabled');
+        } else {
+            signupForm.classList.remove('disabled');
+        }
+    });
+});
+</script>
 {% endblock %}

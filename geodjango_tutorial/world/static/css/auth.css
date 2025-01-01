@@ -1,0 +1,167 @@
+/* Add this to your CSS with higher specificity */
+.btn.btn-primary {
+    background-color: #e74c3c !important;
+    border-color: #e74c3c !important;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn.btn-primary:hover {
+    background-color: #d44235 !important;
+    border-color: #c0392b !important;
+    transform: translateY(-1px);
+}
+
+/* For active/focused state */
+.btn.btn-primary:active,
+.btn.btn-primary:focus {
+    background-color: #c0392b !important;
+    border-color: #c0392b !important;
+    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25) !important;
+}
+
+
+/* Base form styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    min-height: 44px;
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 5px;
+    font-size: 0.875rem;
+}
+
+/* Link styles */
+.text-muted a {
+    color: #e74c3c;  /* Changed to match navbar */
+}
+
+.text-muted a:hover {
+    color: #c0392b;  /* Darker shade of navbar color */
+    text-decoration: underline !important;
+}
+
+/* Keep your existing animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Auth container styles - unchanged */
+.auth-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* PWA-specific styles - unchanged */
+.hidden {
+    display: none !important;
+}
+
+#offline-notice,
+.offline-notice {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+form.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Form accessibility - using existing red */
+form:not(.disabled) button:not(:disabled):hover {
+    background-color: #c0392b;  /* Darker shade of navbar color */
+}
+
+/* Connection status indicator */
+.connection-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.connection-status.online {
+    background-color: #2ecc71;  /* Keep green for online status */
+    color: white;
+}
+
+.connection-status.offline {
+    background-color: #e74c3c;  /* Match navbar color */
+    color: white;
+}
+
+/* PWA installation prompt */
+#pwa-install-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* PWA standalone mode adjustments */
+@media (display-mode: standalone) {
+    .auth-container {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Mobile touch target improvements */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+button {
+    min-height: 44px;
+}

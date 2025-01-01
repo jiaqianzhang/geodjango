@@ -22,29 +22,28 @@ services:
       PGADMIN_DEFAULT_EMAIL: docker@example.com
       PGADMIN_DEFAULT_PASSWORD: docker
     volumes:
-      - my_pgadmin4_data:/var/lib/pgadmin4
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgis
     networks:
       - geodjango_tutorial
-
+  
   postgis:
     image: kartoza/postgis
+    platform: linux/arm64/v8  # Specify ARM architecture for PostGIS
     ports:
       - "5432:5432"
-    environment: 
-      - POSTGRES_DB=postgis
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - ALLOW_IP_RANGE=0.0.0.0/0  # Added for kartoza/postgis
+    environment:
+      POSTGRES_HOST: 0.0.0.0
+      POSTGRES_DB: gis
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      # POSTGRES_HOST_AUTH_METHOD: md5  # Changed to md5
     volumes:
-      - my_first_spatialdb_data:/var/lib/postgresql/data
-    networks:
-      - geodjango_tutorial
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
+      # test: ["CMD-SHELL", "pg_isready -U docker -d gis"]
+      test: ["CMD", "pg_isready", "-h", "postgis", "-U", "docker"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,10 +56,10 @@ services:
       - PROJ_LIB=/opt/conda/envs/env/share/proj
       - DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
       - PYTHONUNBUFFERED=1
-      - POSTGRES_DB=postgis
+      - POSTGRES_DB=gis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST=postgis
+      - POSTGRES_HOST=0.0.0.0
     volumes:
       - .:/app
     ports:
@@ -86,9 +85,7 @@ services:
       - nginx
     networks:
       - geodjango_tutorial
-volumes:
-  my_pgadmin4_data: {}
-  my_first_spatialdb_data: {}
 
-networks:
-  geodjango_tutorial:
+volumes:
+  postgres_data:
+  pgadmin_data:
