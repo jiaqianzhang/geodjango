@@ -16,7 +16,6 @@ services:
     networks:
       - geodjango_tutorial
 
-  services:
   awm_django_app:
     image: geodjango_tutorial
     build: .
