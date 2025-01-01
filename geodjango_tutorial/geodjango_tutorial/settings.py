@@ -14,7 +14,16 @@ SECRET_KEY = 'django-insecure-y2b^qnlw^ola@y@zetey6^g%z1pht*w2fd6uxn0!hnp26m9=tw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.206.144.181', 'jiaqianzhang.site', 'www.jiaqianzhang.site', '0.0.0.0']
+ALLOWED_HOSTS = [
+    'jiaqianzhang.site',
+    'www.jiaqianzhang.site',
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'awm_django_app',
+    'geodjango_tutorial-awm_django_app-1',
+]
+
 
 LOGIN_URL = 'login'
 

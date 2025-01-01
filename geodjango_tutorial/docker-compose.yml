@@ -17,7 +17,7 @@ services:
     image: geodjango_tutorial
     build: .
     environment:
-      - DJANGO_ALLOWED_HOSTS=jiaqianzhang.site,www.jiaqianzhang.site,geodjango_tutorial-awm_django_app-1
+      - DJANGO_ALLOWED_HOSTS=jiaqianzhang.site,www.jiaqianzhang.site,localhost,127.0.0.1,[::1],awm_django_app,geodjango_tutorial-awm_django_app-1
       - GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so
       - GEOS_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgeos_c.so
       - GDAL_DATA=/usr/share/gdal
