@@ -27,25 +27,7 @@ services:
     networks:
       - geodjango_tutorial
 
-  postgis:
-    image: postgis/postgis
-    environment:
-      - POSTGRES_DB=gis
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d gis"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - geodjango_tutorial
-
-    awm_django_app:
+  awm_django_app:
     image: geodjango_tutorial
     build: .
     environment:
