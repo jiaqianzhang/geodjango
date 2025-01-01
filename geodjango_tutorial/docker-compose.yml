@@ -83,15 +83,18 @@ services:
     depends_on:
       - nginx
     command: >
-      certonly --webroot 
-      --webroot-path=/var/www/certbot 
-      --email c21408862@mytudublin.com  # Replace with your actual email
-      --agree-tos 
-      --no-eff-email 
+      certonly
+      --webroot
+      --webroot-path=/var/www/certbot
+      --email c21408862@mytudublin.com
+      --agree-tos
+      --no-eff-email
       --staging
       --non-interactive
+      -d jiaqianzhang.site
     networks:
       - geodjango_tutorial
+
 
 
 
