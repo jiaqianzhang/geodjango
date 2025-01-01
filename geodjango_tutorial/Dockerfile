@@ -17,7 +17,8 @@ RUN touch /app/debug.log && \
 
 # Install system dependencies including GDAL
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y \
+    curl \
     build-essential \
     python3-dev \
     gdal-bin \
