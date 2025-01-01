@@ -33,7 +33,7 @@ services:
     ports:
       - "5432:5432"
     environment: 
-      - POSTGRES_DB=postgis
+      - POSTGRES_DB=gis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -44,7 +44,7 @@ services:
       - geodjango_tutorial
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
+      test: ["CMD-SHELL", "pg_isready", "-h", "postgis", "-U", "docker"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,10 +57,10 @@ services:
       - PROJ_LIB=/opt/conda/envs/env/share/proj
       - DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
       - PYTHONUNBUFFERED=1
-      - POSTGRES_DB=postgis
+      - POSTGRES_DB=gis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST=postgis
+      - POSTGRES_HOST=0.0.0.0
     volumes:
       - .:/app
     ports:
