@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   nginx:
@@ -16,6 +16,7 @@ services:
     networks:
       - geodjango_tutorial
 
+  services:
   awm_django_app:
     image: geodjango_tutorial
     build: .
@@ -28,7 +29,7 @@ services:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_HOST=postgis
-      - DJANGO_ALLOWED_HOSTS=jiaqianzhang.site,www.jiaqianzhang.site,localhost,127.0.0.1
+      - DJANGO_ALLOWED_HOSTS=*  # Change this to allow all hosts temporarily
       - DJANGO_DEBUG=1
       - PYTHONUNBUFFERED=1
     volumes:
@@ -40,12 +41,15 @@ services:
     command: >
       bash -c '
         echo "Starting Django setup..." &&
+        cd /app &&
+        conda run -n env python manage.py check &&
         conda run -n env python manage.py migrate --noinput &&
         echo "Starting Django development server..." &&
-        conda run -n env python manage.py runserver 0.0.0.0:8001
+        conda run -n env python manage.py runserver 0.0.0.0:8001 --noreload
       '
     networks:
       - geodjango_tutorial
+
 
   postgis:
     image: postgis/postgis
