@@ -29,23 +29,17 @@ services:
       - geodjango_tutorial
 
   postgis:
-    image: kartoza/postgis
-    platform: linux/amd64
-    ports:
-      - "5432:5432"
-    environment: 
+    image: postgis/postgis
+    environment:
       - POSTGRES_DB=gis
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - ALLOW_IP_RANGE=0.0.0.0/0  # Added for kartoza/postgis
+    ports:
+      - "5432:5432"
     volumes:
-      - my_first_spatialdb_data:/var/lib/postgresql/data
-    networks:
-      - geodjango_tutorial
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docker -d postgis"]
+      test: ["CMD-SHELL", "pg_isready -U docker -d gis"]
       interval: 10s
       timeout: 5s
       retries: 5
