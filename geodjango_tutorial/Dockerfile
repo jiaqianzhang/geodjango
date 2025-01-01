@@ -1,3 +1,4 @@
+# Start from the miniconda base image
 FROM continuumio/miniconda3
 
 LABEL maintainer="Bujar Raufi"
@@ -11,8 +12,7 @@ ENV PYTHONPATH="/app"
 RUN mkdir -p /app
 WORKDIR /app
 
-# Install GDAL and dependencies via Conda
-COPY ENV.yml .
+# Install GDAL dependencies using Conda
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential && \
@@ -20,7 +20,7 @@ RUN apt-get update && \
     conda clean -a && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set up the shell to activate the environment
+# Activate the environment
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
 # Set GDAL environment variables
@@ -28,11 +28,11 @@ ENV GDAL_VERSION=3.9.3
 ENV PROJ_LIB=/opt/conda/envs/env/share/proj
 ENV GDAL_DATA=/opt/conda/envs/env/share/gdal
 
-# Copy the project files
+# Copy the project files into the container
 COPY . /app
 
 # Expose the Django development server port
 EXPOSE 8001
 
-# Run migrations and start the server using conda activate
-CMD ["bash", "-c", "source activate env && python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
+# Run migrations and start the server
+CMD ["bash", "-c", "source /opt/conda/bin/activate env && python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
