@@ -75,25 +75,15 @@ services:
     networks:
       - geodjango_tutorial
 
-  certbot:
+    certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/www:/var/www/certbot:rw
       - ./certbot/conf:/etc/letsencrypt:rw
     depends_on:
       - nginx
-    command: >
-      certonly
-      --webroot
-      --webroot-path=/var/www/certbot
-      --email c21408862@mytudublin.com
-      --agree-tos
-      --no-eff-email
-      --force-renewal
-      -d jiaqianzhang.site
-      -d www.jiaqianzhang.site
-    networks:
-      - geodjango_tutorial
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 
 
 
