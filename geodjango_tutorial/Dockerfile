@@ -2,32 +2,36 @@ FROM continuumio/miniconda3
 
 LABEL maintainer="Bujar Raufi"
 
-# I use the geodjango_tutorial as my project name adjust to your project name
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=geodjango_tutorial.settings
+ENV PYTHONPATH="/app"
 
+# Create and set the working directory
 RUN mkdir -p /app
 WORKDIR /app
 
-# Create the environment:
+# Create log directory and file with proper permissions
+RUN touch /app/debug.log && \
+    chmod 666 /app/debug.log
+
+# Create the environment (copy only necessary files first)
 COPY ENV.yml .
-RUN conda env create -f ENV.yml
+RUN conda env create -f ENV.yml && \
+    conda clean -a
 
-RUN mkdir -p /home/ubuntu/geodjango/geodjango_tutorial
-
-# Make RUN commands use the new environment:
+# Make RUN commands use the new environment
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 
-# Copy everything in your Django project to the image.
+# Copy project files
 COPY . /app
-ENV PYTHONPATH="/app"
 
-# The code to run when container is started:
-COPY manage.py .
-ENTRYPOINT ["conda", "run", "-n", "env"]
+# Remove redundant COPY of manage.py since it's already included in COPY . /app
+# COPY manage.py .  <- Remove this line as it's redundant
 
-# Exposing the port that the container will operate feel free to change is port is taken
+# Exposing the port
 EXPOSE 8001
 
-# Start the server when the container starts
+# Set the entrypoint and command
+ENTRYPOINT ["conda", "run", "-n", "env"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
