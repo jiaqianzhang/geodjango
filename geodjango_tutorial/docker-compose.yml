@@ -46,11 +46,18 @@ services:
     networks:
       - geodjango_tutorial
 
-  awm_django_app:
+    awm_django_app:
     image: geodjango_tutorial
     build: .
     environment:
-      - GDAL_LIBRARY_PATH=/usr/lib/libgdal.so  # Set GDAL path
+      - GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so
+      - GEOS_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgeos_c.so
+      - GDAL_DATA=/usr/share/gdal
+      - PROJ_LIB=/usr/share/proj
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_HOST=postgis
     volumes:
       - .:/app
     ports:
@@ -65,6 +72,7 @@ services:
       "
     networks:
       - geodjango_tutorial
+
 
   
   certbot:
