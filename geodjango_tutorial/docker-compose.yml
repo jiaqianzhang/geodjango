@@ -1,5 +1,3 @@
-
-
 services:
   nginx:
     image: nginx:latest
@@ -37,23 +35,18 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      postgis:
-        condition: service_started
+      - postgis
+    entrypoint: []  # Clear any existing entrypoint
     command: >
-      bash -c '
-        echo "[$(date)] Starting container..." &&
+      /bin/bash -c "
         cd /app &&
-        echo "[$(date)] Current directory: $$(pwd)" &&
-        echo "[$(date)] Activating conda environment..." &&
-        source /opt/conda/etc/profile.d/conda.sh &&
+        . /opt/conda/etc/profile.d/conda.sh &&
         conda activate env &&
-        echo "[$(date)] Running Django checks..." &&
-        python manage.py check --verbosity 3 &&
-        echo "[$(date)] Starting Django server..." &&
-        exec python manage.py runserver 0.0.0.0:8001 --verbosity 3
-      '
+        exec python -u manage.py runserver 0.0.0.0:8001
+      "
     networks:
       - geodjango_tutorial
+
 
   postgis:
     image: postgis/postgis
