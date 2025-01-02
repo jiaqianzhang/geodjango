@@ -35,6 +35,25 @@ class PWAInstaller {
         this.criteria = checkInstallationCriteria();
         
         this.init();
+        this.debugInstallState(); // This call needs the method below
+    }
+
+    // Add back the debugInstallState method
+    debugInstallState() {
+        console.log('Debugging PWA install state:');
+        console.log('- In standalone mode:', window.matchMedia('(display-mode: standalone)').matches);
+        console.log('- Install button exists:', !!this.installButton);
+        console.log('- Install container exists:', !!this.installContainer);
+        console.log('- Deferred prompt available:', !!this.deferredPrompt);
+        console.log('- Container display style:', this.installContainer?.style.display);
+        console.log('- Button display style:', this.installButton?.style.display);
+        
+        // Check if installed through platform-specific APIs
+        if ('getInstalledRelatedApps' in navigator) {
+            navigator.getInstalledRelatedApps().then(apps => {
+                console.log('- Installed related apps:', apps);
+            });
+        }
     }
 
     init() {
