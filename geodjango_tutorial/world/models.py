@@ -7,6 +7,7 @@ from django.dispatch import receiver
 User = get_user_model()
 
 class FavouriteCafe(models.Model):
+    # model to store information about favourite cafes
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cafe_id = models.CharField(max_length=255)  # Google Places ID
     name = models.CharField(max_length=255)
@@ -20,6 +21,7 @@ class FavouriteCafe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        # ensure user can't favourite the same cafe multiple times
         unique_together = ('user', 'cafe_id')
 
     def __str__(self):
@@ -27,6 +29,7 @@ class FavouriteCafe(models.Model):
     
 
 class UserProfile(models.Model):
+    # model to store additional user information
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.PointField(null=True, blank=True)
     favorite_cafes = models.ManyToManyField(FavouriteCafe, related_name='favourited_by')
@@ -37,18 +40,19 @@ class UserProfile(models.Model):
 
     @classmethod
     def set_user_location(cls, user_id, latitude, longitude):
+        # method to update user's location
         user = User.objects.get(id=user_id)
-        location = Point(longitude, latitude)  # Point takes (longitude, latitude)
+        location = Point(longitude, latitude)  # point takes (longitude, latitude)
         
-        # Create or update the user's profile
+        # create or update the user's profile
         profile, created = cls.objects.get_or_create(user=user)
         profile.location = location
-        profile.last_location = location  # Update both location fields
+        profile.last_location = location  # update both location fields
         profile.save()
         
         return profile
 
-# Signal handlers
+# signal handlers for automatic profile management
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     """Create a Profile instance when a new User is created"""
@@ -65,7 +69,7 @@ def save_user_profile(sender, instance, **kwargs):
     try:
         instance.userprofile.save()
     except UserProfile.DoesNotExist:
-        # Create profile if it doesn't exist
+        # create profile if it doesn't exist
         UserProfile.objects.create(
             user=instance,
             location=Point(0, 0),

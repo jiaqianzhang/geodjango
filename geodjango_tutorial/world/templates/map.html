@@ -1,23 +1,32 @@
+{# extend the base template #}
 {% extends "base.html" %}
+{# load static files management template tag #}
 {% load static %}
 
+{# add custom css for the map page #}
 {% block extra_css %}
 {{ block.super }} 
 <link rel="stylesheet" href="{% static 'css/map.css' %}">
 {% endblock %}
 
+{# main content block #}
 {% block content %}
-{% csrf_token %}  <!-- Add the token here -->
+{# csrf token for form security #}
+{% csrf_token %}
 <div class="container-fluid">
+    {# map container with location services prompt #}
     <div class="map-container mb-4">
+        {# location services prompt alert #}
         <div id="locationPrompt" class="alert alert-info" role="alert">
             <h5 class="alert-heading">Enable Location Services</h5>
             <p class="mb-2">Please enable location services to find cafes near you.</p>
+            {# location enable button with icon #}
             <button id="enableLocation" class="btn btn-primary">
                 <i class="fas fa-location-arrow me-2"></i>Enable Location
             </button>
         </div>
 
+        {# loading spinner while fetching cafes #}
         <div id="loadingIndicator" class="loading-indicator">
             <div class="d-flex align-items-center">
                 <div class="spinner-border text-primary me-3" role="status">
@@ -27,11 +36,14 @@
             </div>
         </div>
 
+        {# map display container #}
         <div id="map"></div>
     </div>
 
+    {# container for listing nearby cafes #}
     <div id="cafeListContainer" class="cafe-list-container" style="display: none;">
         <h3 class="mb-3">Nearby Cafes</h3>
+        {# dynamic list of cafes will be inserted here #}
         <div id="cafeList" class="cafe-list"></div>
     </div>
 </div>

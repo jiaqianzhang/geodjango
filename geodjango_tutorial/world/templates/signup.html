@@ -1,109 +1,110 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_filters %}
+
 {% block title %}Sign Up {% endblock %}
 
 {% block extra_css %}
 <style>
-/* Specific styles for signup form */
+/* styles for the signup form button */
 #signupForm .btn.btn-primary,
 .card .btn.btn-primary {
-    background-color: #e74c3c !important;
-    border-color: #e74c3c !important;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
+    background-color: #e74c3c !important; /* primary red color */
+    border-color: #e74c3c !important; /* match button border color */
+    font-weight: 500; /* bold font */
+    transition: all 0.2s ease-in-out; /* smooth transition effect */
 }
 
 #signupForm .btn.btn-primary:hover,
 .card .btn.btn-primary:hover {
-    background-color: #d44235 !important;
-    border-color: #c0392b !important;
-    transform: translateY(-1px);
+    background-color: #d44235 !important; /* darker shade on hover */
+    border-color: #c0392b !important; /* darker border on hover */
+    transform: translateY(-1px); /* slight upward movement */
 }
 
 #signupForm .btn.btn-primary:active,
 #signupForm .btn.btn-primary:focus,
 .card .btn.btn-primary:active,
 .card .btn.btn-primary:focus {
-    background-color: #c0392b !important;
-    border-color: #c0392b !important;
-    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25) !important;
+    background-color: #c0392b !important; /* even darker shade when active */
+    border-color: #c0392b !important; /* consistent darker border */
+    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25) !important; /* subtle shadow effect */
 }
 
-/* Additional specific styles for the signup page */
+/* additional styles for signup page buttons */
 .container .card .btn-primary {
     background-color: #e74c3c !important;
     border-color: #e74c3c !important;
 }
 
 .container .card .btn-primary:hover {
-    background-color: #d44235 !important;
-    border-color: #c0392b !important;
+    background-color: #d44235 !important; /* hover color */
+    border-color: #c0392b !important; /* hover border */
 }
-/* Link styles */
+
+/* link styles for muted text */
 .text-muted a {
-    color: #e74c3c;  /* Changed to match navbar */
+    color: #e74c3c; /* match primary button color */
 }
 
 .text-muted a:hover {
-    color: #c0392b;  /* Darker shade of navbar color */
-    text-decoration: underline !important;
+    color: #c0392b; /* darker hover color */
+    text-decoration: underline !important; /* underline on hover */
 }
 
-
-/* Card Styles */
+/* card styling */
 .card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    animation: fadeIn 0.5s ease-in-out;
+    border: none; /* remove default card border */
+    border-radius: 10px; /* rounded corners */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* soft shadow */
+    animation: fadeIn 0.5s ease-in-out; /* fade-in effect */
 }
 
-/* Form Control Styles */
+/* form control input fields */
 .form-control {
-    border-radius: 7px;
-    padding: 12px;
-    border: 1px solid #e1e1e1;
-    min-height: 44px; /* Improve touch targets */
+    border-radius: 7px; /* rounded corners */
+    padding: 12px; /* comfortable padding */
+    border: 1px solid #e1e1e1; /* light grey border */
+    min-height: 44px; /* ensure touch-friendly height */
 }
 
 .form-control:focus {
-    border-color: #e74c3c;
-    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    border-color: #e74c3c; /* red border on focus */
+    box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25); /* focus shadow effect */
 }
 
-/* Button Styles */
+/* primary button styling */
 .btn-primary {
-    background-color: #e74c3c;
-    border-color: #e74c3c;
-    font-weight: 500;
-    padding: 12px;
-    border-radius: 7px;
-    min-height: 44px;
-    transition: all 0.2s ease-in-out;
+    background-color: #e74c3c; /* red background */
+    border-color: #e74c3c; /* red border */
+    font-weight: 500; /* bold text */
+    padding: 12px; /* consistent padding */
+    border-radius: 7px; /* rounded corners */
+    min-height: 44px; /* touch-friendly height */
+    transition: all 0.2s ease-in-out; /* smooth transition */
 }
 
 .btn-primary:hover {
-    background-color: #d44235;
-    border-color: #c0392b;
-    transform: translateY(-1px);
+    background-color: #d44235; /* darker red on hover */
+    border-color: #c0392b; /* matching border */
+    transform: translateY(-1px); /* slight hover effect */
 }
 
-/* Label Styles */
+/* label styling */
 .form-label {
-    font-weight: 500;
-    color: #495057;
-    margin-bottom: 0.5rem;
+    font-weight: 500; /* bold text for labels */
+    color: #495057; /* dark grey color */
+    margin-bottom: 0.5rem; /* spacing below label */
 }
 
-/* Link Styles */
+/* link styling for consistent color and transition */
 .text-decoration-none {
-    color: #e74c3c;
-    transition: color 0.2s ease;
+    color: #e74c3c; /* red link color */
+    transition: color 0.2s ease; /* smooth color change */
 }
 
 .text-decoration-none:hover {
-    color: #c0392b;
+    color: #c0392b; /* darker red on hover */
 }
 </style>
 {% endblock %}
@@ -112,11 +113,15 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
+            <!-- card for the signup form -->
             <div class="card shadow-sm">
                 <div class="card-body p-4">
+                    <!-- header for the form -->
                     <h2 class="text-center mb-4">Create Account</h2>
+                    <!-- signup form -->
                     <form method="post" id="signupForm" action="{% url 'signup' %}">
                         {% csrf_token %}
+                        <!-- display errors if form is invalid -->
                         {% if form.errors %}
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -129,6 +134,7 @@
                         </div>
                         {% endif %}
                         
+                        <!-- username field -->
                         <div class="mb-3">
                             <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
                             {{ form.username|addclass:"form-control" }}
@@ -137,6 +143,7 @@
                             {% endif %}
                         </div>
                         
+                        <!-- password field -->
                         <div class="mb-3">
                             <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
                             {{ form.password1|addclass:"form-control" }}
@@ -145,6 +152,7 @@
                             {% endif %}
                         </div>
                         
+                        <!-- confirm password field -->
                         <div class="mb-3">
                             <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
                             {{ form.password2|addclass:"form-control" }}
@@ -153,10 +161,12 @@
                             {% endif %}
                         </div>
                         
+                        <!-- submit button -->
                         <button type="submit" class="btn btn-primary w-100 py-2 mt-3">
                             <i class="fas fa-user-plus me-2"></i>Sign Up
                         </button>
                     </form>
+                    <!-- login link -->
                     <div class="text-center mt-4">
                         <p class="text-muted">
                             Already have an account? 
@@ -169,7 +179,6 @@
     </div>
 </div>
 {% endblock %}
-
 
 {% block extra_javascript %}
 <script>
@@ -186,15 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Listen for connection status changes
+    // listen for connection status changes
     window.addEventListener('connectionStatusChanged', (event) => {
         const isOnline = event.detail.isOnline;
         submitButton.disabled = !isOnline;
         
         if (!isOnline) {
-            signupForm.classList.add('disabled');
+            signupForm.classList.add('disabled'); // disable form if offline
         } else {
-            signupForm.classList.remove('disabled');
+            signupForm.classList.remove('disabled'); // enable form if back online
         }
     });
 });

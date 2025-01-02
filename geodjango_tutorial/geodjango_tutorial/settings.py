@@ -5,7 +5,7 @@ import os
 GDAL_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgdal.so"
 GEOS_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgeos_c.so"
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# build path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -24,14 +24,12 @@ ALLOWED_HOSTS = [
     'geodjango_tutorial-awm_django_app-1',
 ]
 
-
 LOGIN_URL = 'login'
 
-# API Keys
+# API Key
 GOOGLE_MAPS_API_KEY = 'AIzaSyBSxFdTUu9DcsI1fU1n5nBBZQyb9OxKnfE'
 
-
-# Application definition
+# application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -106,7 +104,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://jiaqianzhang.site",
     "http://www.jiaqianzhang.site",
     "https://jiaqianzhang.site",
-    "https://www.jiaqianzhang.site",]  # Add your domains
+    "https://www.jiaqianzhang.site",]  # Add domain
 
 ROOT_URLCONF = 'geodjango_tutorial.urls'
 
@@ -127,7 +125,7 @@ LEAFLET_CONFIG = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # Add your template directory
+        "DIRS": [BASE_DIR / "templates"],  # add template directory
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -142,7 +140,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'geodjango_tutorial.wsgi.application'
 
-# Database
+# database
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -154,7 +152,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -170,22 +168,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files configuration
+# static files configuration
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'world', 'static'),  # Updated path to point to world/static
+    os.path.join(BASE_DIR, 'world', 'static'),  # path point to world/static
 ]
-# settings.py
+
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
-# Add these headers to your web server config or middleware
+# add headers to web server config or middleware
 STATIC_FILES_HEADERS = {
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
@@ -203,19 +201,18 @@ STATIC_FILES_HEADERS = {
 #     }
 # }
 
-
-# Session settings
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database for sessions instead of cached_db
+# session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # use database for sessions instead of cached_db
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Security Settings
+# security Settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# Logging configuration
+# logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
