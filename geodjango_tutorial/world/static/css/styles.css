@@ -159,15 +159,17 @@ footer {
     padding: 0;
 }
 
-/* PWA Install Styles */
 .pwa-footer-install {
-    display: flex;
-    justify-content: flex-end;
+    display: none; /* Initial state */
 }
 
-.install-content {
-    text-align: right;
-    width: 100%;
+.pwa-footer-install.show {
+    display: block !important; /* Override any inline styles */
+}
+
+.btn-install {
+    display: block;
+    /* Add any other styling you need */
 }
 
 .button-container {
