@@ -244,6 +244,22 @@ class PWAInstaller {
             this.debugInstallState();
         }
     }
+    showInstalledMessage() {
+        if (this.installContainer) {
+            this.installContainer.style.display = 'block';
+            if (this.installMessage) {
+                this.installMessage.textContent = 'App is already installed';
+            }
+            if (this.installButton) {
+                this.installButton.style.display = 'none';
+            }
+            requestAnimationFrame(() => {
+                this.installContainer.classList.add('show');
+            });
+            console.log('Installed message shown');
+            this.debugInstallState();
+        }
+    }
 
     async installPWA() {
         console.log('Installing PWA...');
