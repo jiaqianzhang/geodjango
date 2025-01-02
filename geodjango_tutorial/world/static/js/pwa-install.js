@@ -1,6 +1,14 @@
 // pwa-install.js
 console.log('PWA Installer loaded - version 2'); // Increment version
 
+// Add this at the very top of your file, before the class definition
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('beforeinstallprompt event captured');
+    e.preventDefault();
+    window.deferredPromptEvent = e;  // Store it globally
+});
+
+
 class PWAInstaller {
     constructor() {
         console.log('PWA Installer initialized');
