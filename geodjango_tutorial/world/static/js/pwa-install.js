@@ -1,5 +1,11 @@
-// Global event capture
+// Global event capture - must be at the very top of the file
 let deferredPromptEvent = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('Global beforeinstallprompt captured');
+    e.preventDefault();
+    deferredPromptEvent = e;
+});
 
 // Add diagnostic information
 const checkInstallationCriteria = () => {
@@ -16,32 +22,18 @@ const checkInstallationCriteria = () => {
     return criteria;
 };
 
-// Capture the event globally
-window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('Global beforeinstallprompt captured');
-    e.preventDefault();
-    deferredPromptEvent = e;
-});
-
 class PWAInstaller {
     constructor() {
         console.log('PWA Installer initialized');
-        this.deferredPrompt = null;
+        this.deferredPrompt = deferredPromptEvent; // Use the globally captured event
         this.installContainer = document.getElementById('pwaInstallContainer');
         this.installButton = document.getElementById('pwaInstallBtn');
         this.installMessage = this.installContainer?.querySelector('p');
         
-        // Check installation criteria immediately
         this.criteria = checkInstallationCriteria();
-        
-        // Show the container if we meet the basic criteria
-        if (this.criteria.isHttps && this.criteria.hasServiceWorker && this.criteria.hasManifest) {
-            this.showInstallButton();
-        }
-        
         this.init();
-        this.debugInstallState();
     }
+
 
     // Add back the debugInstallState method
     debugInstallState() {
@@ -60,6 +52,126 @@ class PWAInstaller {
             });
         }
     }
+        async init() {
+            console.log('Initializing PWA installer');
+    
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Already in standalone mode');
+                this.showInstalledMessage();
+                return;
+            }
+    
+            // Check if installable
+            const isInstallable = await this.checkInstallability();
+            if (!isInstallable) {
+                console.log('App is not installable at the moment');
+                this.showManualInstallInstructions();
+                return;
+            }
+    
+            // Listen for the install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('beforeinstallprompt event captured in init');
+                e.preventDefault();
+                this.deferredPrompt = e;
+                this.showInstallPrompt();
+            });
+    
+            // Handle install button click
+            if (this.installButton) {
+                this.installButton.addEventListener('click', () => {
+                    console.log('Install button clicked');
+                    this.installPWA();
+                });
+            }
+    
+            // Show initial state
+            if (this.deferredPrompt) {
+                this.showInstallPrompt();
+            } else {
+                this.showManualInstallInstructions();
+            }
+    
+            this.debugInstallState();
+        }
+    
+        async checkInstallability() {
+            // Check basic criteria
+            const basicCriteriaMet = 
+                this.criteria.isHttps && 
+                this.criteria.hasServiceWorker && 
+                this.criteria.hasManifest;
+    
+            if (!basicCriteriaMet) {
+                console.log('Basic installation criteria not met');
+                return false;
+            }
+    
+            // Check if already installed
+            if ('getInstalledRelatedApps' in navigator) {
+                try {
+                    const relatedApps = await navigator.getInstalledRelatedApps();
+                    if (relatedApps.length > 0) {
+                        console.log('App is already installed');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error checking installed apps:', error);
+                }
+            }
+    
+            return true;
+        }
+    
+        showManualInstallInstructions() {
+            if (this.installContainer) {
+                this.installContainer.style.display = 'block';
+                if (this.installMessage) {
+                    if (this.criteria.isIOS) {
+                        this.installMessage.textContent = 'To install: tap Share then Add to Home Screen';
+                    } else {
+                        this.installMessage.textContent = 'To install: click the menu button (⋮) and select "Install app"';
+                    }
+                }
+                if (this.installButton) {
+                    this.installButton.textContent = 'Install from Browser Menu';
+                }
+            }
+        }
+    
+        async installPWA() {
+            console.log('Installing PWA...');
+            console.log('Installation state:', {
+                hasPrompt: !!this.deferredPrompt,
+                criteria: this.criteria
+            });
+    
+            if (!this.deferredPrompt) {
+                console.log('No deferred prompt available - showing manual instructions');
+                this.showManualInstallInstructions();
+                return;
+            }
+    
+            try {
+                await this.deferredPrompt.prompt();
+                const choiceResult = await this.deferredPrompt.userChoice;
+                console.log('User install choice:', choiceResult.outcome);
+                
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted installation');
+                    this.showInstalledMessage();
+                } else {
+                    console.log('User declined installation');
+                    this.showManualInstallInstructions();
+                }
+                
+                this.deferredPrompt = null;
+            } catch (error) {
+                console.error('Installation error:', error);
+                this.showManualInstallInstructions();
+            }
+        }
 
     showInstallButton() {
         if (this.installContainer) {
@@ -163,68 +275,7 @@ class PWAInstaller {
             console.error('Installation error:', error);
         }
     }
-    showInstallPrompt() {
-        if (this.installContainer) {
-            this.installContainer.style.display = 'block';
-            if (this.installMessage) {
-                this.installMessage.textContent = 'Get our app for a better experience';
-            }
-            if (this.installButton) {
-                this.installButton.style.display = 'block';
-            }
-            requestAnimationFrame(() => {
-                this.installContainer.classList.add('show');
-            });
-            console.log('Install prompt shown');
-            this.debugInstallState();
-        }
     }
-
-    showInstalledMessage() {
-        if (this.installContainer) {
-            this.installContainer.style.display = 'block';
-            if (this.installMessage) {
-                this.installMessage.textContent = 'App is already installed';
-            }
-            if (this.installButton) {
-                this.installButton.style.display = 'none';
-            }
-            requestAnimationFrame(() => {
-                this.installContainer.classList.add('show');
-            });
-            console.log('Installed message shown');
-            this.debugInstallState();
-        }
-    }
-
-    async installPWA() {
-        console.log('Installing PWA...');
-        console.log('Deferred prompt available:', !!this.deferredPrompt);
-        
-        if (this.deferredPrompt) {
-            try {
-                // Show the install prompt
-                this.deferredPrompt.prompt();
-                
-                // Wait for the user to respond to the prompt
-                const { outcome } = await this.deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                
-                // Clear the deferredPrompt
-                this.deferredPrompt = null;
-                
-                // Show installed message if installation was successful
-                if (outcome === 'accepted') {
-                    this.showInstalledMessage();
-                }
-            } catch (error) {
-                console.error('Error during PWA installation:', error);
-            }
-        } else {
-            console.log('No deferred prompt available - cannot install');
-        }
-    }
-}
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
